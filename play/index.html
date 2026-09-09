@@ -440,7 +440,7 @@ function step(dt,inp){
   if(dist>HREST){ ten=Math.min(1,(dist-HREST)/(HMAX-HREST)); if(dist>HMAX){ const c=dist-HMAX; D.x-=ux*c*0.85; D.y-=uy*c*0.85; P.x+=ux*c*0.15; P.y+=uy*c*0.15; } DV.x-=ux*ten*200*dt; DV.y-=uy*ten*200*dt; }
   tension+=(ten-tension)*Math.min(1,dt*10);
   if(tension>0.25&&!reduced) rumble(0.12*tension,0.3*tension,60);
-  if(tension>0.7){ fastFor+=dt; if(fastFor>1.6){ fastFor=0; dT-=0.03; say('너무 빨랐나. 지우 숨소리가 거칠다.',0,'천천히.'); } } else fastFor=Math.max(0,fastFor-dt);
+  if(tension>0.7&&Math.hypot(PV.x,PV.y)>HANDSP*0.8){ fastFor+=dt; if(fastFor>1.6){ fastFor=0; dT-=0.03; say('너무 빨랐나. 지우 숨소리가 거칠다.',0,'천천히.'); } } else fastFor=Math.max(0,fastFor-dt);
   if(dsp>50&&dsp<150&&tension<0.3&&sniffTimer<=0&&handlerStun<=0) dT+=0.008*dt;
 
   // 횡단보도
