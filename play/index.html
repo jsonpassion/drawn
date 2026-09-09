@@ -34,9 +34,10 @@
   @media (max-width:600px){.frame{aspect-ratio:4/3}}
   canvas{display:block;width:100%;height:100%}
   .note{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
-    font-family:"Gaegu",cursive;font-weight:700;font-size:20px;color:var(--ink);
-    background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:5px 16px;white-space:nowrap;pointer-events:none;
+    font-family:"Gaegu",cursive;font-weight:700;font-size:21px;color:var(--ink);
+    background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:6px 18px;white-space:nowrap;pointer-events:none;
     box-shadow:3px 3px 0 #111;transition:opacity .3s;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+  .note.big{font-size:24px}
   .pad{position:absolute;right:10px;top:10px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;
     color:var(--g1);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 9px}
   .pad.on{background:var(--ink);color:#fff}
@@ -148,6 +149,10 @@
 <script>
 (function(){
 "use strict";
+/* ── 잉크 규칙. 앱의 Ink.swift와 같은 숫자다. ─────────────────── */
+const INK={paper:'#FAFAF7',grey:'#C9C9C4',ink:'#111111',leash:'#E8562D',
+           lineChar:3,lineBg:2,lineIn:1.5,headRatio:1.0,eye:0.12,toneGap:6,toneR:1.15};
+
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 const off=document.createElement('canvas'), octx=off.getContext('2d');
 const msk=document.createElement('canvas'), mctx=msk.getContext('2d');
@@ -162,15 +167,14 @@ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── 개 ─── 개마다 다른 건 스탯이 아니라 손맛이다. */
 const DOGS=[
-  {id:0,name:'콩이',kind:'강아지',bw:'#fff',co:'#E3B67C',size:11,speed:190,mass:0.35,curious:1.6,bolt:0.9,rest:0.1,spots:false,
+  {id:0,name:'콩이',kind:'강아지',bw:'#fff',co:'#E3B67C',size:12,speed:190,mass:0.35,curious:1.6,bolt:0.9,rest:0.1,earDown:true,
    note:'뭐든 다 궁금해요. 고양이 보면 놓치지 마세요.'},
-  {id:1,name:'복동',kind:'노견',bw:'#d9d9d4',co:'#B8A78F',size:14,speed:70,mass:0.8,curious:0.7,bolt:0.05,rest:1.4,spots:true,
+  {id:1,name:'복동',kind:'노견',bw:INK.grey,co:'#B8A78F',size:14,speed:70,mass:0.8,curious:0.7,bolt:0.05,rest:1.4,earDown:true,spots:true,
    note:'열세 살이에요. 자꾸 멈춰요. 그냥 기다려 주세요.'},
-  {id:2,name:'두식',kind:'대형견',bw:'#2a2a28',co:'#3B3532',size:18,speed:150,mass:2.4,curious:1.0,bolt:0.5,rest:0.3,spots:false,
+  {id:2,name:'두식',kind:'대형견',bw:'#111',co:'#3B3532',size:17,speed:150,mass:2.4,curious:1.0,bolt:0.5,rest:0.3,earDown:false,
    note:'힘이 세요. 줄을 세게 잡으면 오히려 더 당겨요.'}
 ];
 
-/* ── 어디서나 있는 것들 ─── */
 const BASE={
   lamp: {k:'lamp', name:'전봇대',  pull:[1.4,1.2,1.0], r:7,  sniff:2.2, line:'전봇대 밑에서 한참 냄새를 맡았다.'},
   tree: {k:'tree', name:'가로수',  pull:[1.0,1.3,0.9], r:16, sniff:2.6, line:'가로수 아래 그늘에서 쉬었다.'},
@@ -181,13 +185,11 @@ const BASE={
   dog2: {k:'dog2', name:'다른 개', pull:[2.2,1.1,1.6], r:9,  sniff:2.0, line:'다른 개와 인사했다.', moves:true}
 };
 
-/* ── 동네 ───────────────────────────────────────────────────
-   도시 하나 = 항목 하나. 팔레트·건물 양식·지평선·바람·그 동네의 것들.
-   새 도시를 더하려면 여기에 항목을 추가하고 필요하면 drawSpot에 그림을 더한다. */
+/* ── 동네 ─── 도시 하나 = 항목 하나. 앱의 CityData.swift와 같은 구조. */
 const CITIES=[
   {id:'busan', name:'부산 · 영도', short:'영도', lat:35.091, lng:129.068,
    intro:'바닷바람이 분다. 갈매기가 있고, 어묵 냄새가 골목까지 온다.',
-   style:'seaside', horizon:'sea', wind:0.6,
+   style:'seaside', horizon:'sea', wind:0.6, first:'omuk',
    pal:{skyBW:'#D6D6D1', sky:'#BFE3F4', wallBW:'#fff', wall:'#EAF0F2', roofBW:'#111', roof:'#3E6E8E',
         walkBW:'#F6F6F2', walk:'#EDE7DA', roadA:'#4A4F5A', roadB:'#2B2F38', water:'#7FB7D6', far:'#9FC7DD'},
    base:['lamp','cat','dog2','pud','hyd'],
@@ -200,7 +202,7 @@ const CITIES=[
    ]},
   {id:'jeonju', name:'전주 · 한옥마을', short:'한옥마을', lat:35.815, lng:127.153,
    intro:'기와 담이 이어진다. 감나무가 있고, 국밥집 뒷문에서 김이 난다.',
-   style:'hanok', horizon:'hills', wind:0.2,
+   style:'hanok', horizon:'hills', wind:0.2, first:'gukbap',
    pal:{skyBW:'#E0DED6', sky:'#F3E6C8', wallBW:'#fff', wall:'#F5EDDC', roofBW:'#111', roof:'#4A4A48',
         walkBW:'#F6F6F2', walk:'#E8DFCB', roadA:'#6B5E4E', roadB:'#3E3630', water:null, far:'#C9D3B0'},
    base:['lamp','cat','dog2','grass','tree'],
@@ -220,7 +222,8 @@ const WALK=90, L0=105, LMAX=135;
 let P,V,D,DV,grip,held,gripBtnLatch;
 let spots=[], sniffCount, mood, tension, t, running, events, camX;
 let sniffTimer, target, wantFor, yankCool, catchCool, dropPromptShown, yankFlash=0, gust=0, gustT=0;
-let rapport=0, rapShown=0;
+let rapport=0, rapShown=0, bloom=0;
+let intro={stage:0};                       // 첫 10초: 0 시작 → 1 당김 → 2 풀어줌 → 3 색
 let W=0,H=0,DPR=1, lastRumble=0;
 
 function loadRap(id){ try{ return Math.max(0,Math.min(1,parseFloat(localStorage.getItem('drawn.rap.'+id))||0)); }catch(e){ return 0; } }
@@ -230,16 +233,19 @@ function reset(){
   P={x:120,y:0}; V={x:0,y:0}; D={x:180,y:10}; DV={x:0,y:0};
   grip=0.55; held=true; gripBtnLatch=false;
   spots=[]; sniffCount=0; mood=0.7; tension=0; t=0; running=true; events=[]; camX=0;
-  sniffTimer=0; target=null; wantFor=0; yankCool=0; catchCool=0; dropPromptShown=false; gust=0; gustT=2+Math.random()*4;
+  sniffTimer=0; target=null; wantFor=0; yankCool=0; catchCool=0; dropPromptShown=false; gust=0; gustT=2+Math.random()*4; bloom=0;
+  intro={stage:0};
   logEl.innerHTML='<div>'+city.short+'. 집을 나섰다.</div>';
   endEl.classList.remove('show');
   const pool=cityPool(city);
-  for(let x=260;x<8000;x+=90+Math.random()*130) spawn(x,pool);
+  // 첫 10초: 바로 앞에 이 동네의 가장 끌리는 것 하나. 개가 즉시 끌린다.
+  const firstK=pool.find(p=>p.k===city.first);
+  spots.push({k:firstK,x:P.x+250,y:-42,used:false,vx:0,ph:0,first:true});
+  for(let x=520;x<8000;x+=90+Math.random()*130) spawn(x,pool);
   whereEl.textContent=city.name;
-  say(city.intro,3600);
+  say(city.intro,3000);
 }
 function spawn(x,pool){
-  // 그 동네의 것이 더 자주, 더 세게 끈다
   let k=pool[(Math.random()*pool.length)|0];
   if(!k.local && Math.random()<0.35) k=pool[(Math.random()*city.spots.length)|0];
   const y=(Math.random()<0.5?-1:1)*(28+Math.random()*34);
@@ -251,7 +257,7 @@ function log(text,cls){
   logEl.scrollTop=logEl.scrollHeight;
 }
 let noteTimer=0;
-function say(s,ms){ noteEl.textContent=s; noteEl.style.opacity=1; noteTimer=(ms||2600)/1000; }
+function say(s,ms,big){ noteEl.textContent=s; noteEl.className='note'+(big?' big':''); noteEl.style.opacity=1; noteTimer=(ms||2600)/1000; }
 
 /* ── 입력 ─── */
 const keys={};
@@ -317,7 +323,7 @@ function pickDog(i){
   dog=DOGS[i]; rapport=loadRap(dog.id); rapShown=rapport;
   D.x=P.x+60; D.y=P.y+10; DV={x:0,y:0}; target=null; sniffTimer=0; mood=0.7;
   renderDogs(); log(dog.name+' ('+dog.kind+') — "'+dog.note+'"');
-  say(dog.name+': '+dog.note,4200);
+  if(intro.stage>=3) say(dog.name+': '+dog.note,4200);
 }
 function pickCity(id,quiet){
   const c=CITIES.find(x=>x.id===id); if(!c) return;
@@ -356,11 +362,12 @@ document.getElementById('geo').onclick=()=>{
 
 function chooseTarget(){
   let best=null,bs=0;
-  const reach=320*(1+city.wind*gust);           // 바람이 불면 냄새가 멀리서 온다
+  const reach=320*(1+city.wind*gust);
   for(const s of spots){
     if(s.used) continue;
     const dx=s.x-D.x, dy=s.y-D.y, dist=Math.hypot(dx,dy);
     if(dist>reach||dx<-60) continue;
+    if(s.first) return s;                                     // 첫 10초는 정해져 있다
     const pull=s.k.pull[dog.id]*dog.curious*(s.k.local?1.15:1);
     const sc=pull/(1+dist/90)+(s.k.moves?dog.bolt*1.2:0)+Math.random()*0.25;
     if(sc>bs){bs=sc;best=s;}
@@ -371,8 +378,8 @@ function chooseTarget(){
 /* ── 물리 ─── */
 function step(dt,inp){
   t+=dt; if(t>=WALK){ finish(); return; }
-  yankCool=Math.max(0,yankCool-dt); catchCool=Math.max(0,catchCool-dt); yankFlash=Math.max(0,yankFlash-dt*3);
-  gustT-=dt; if(gustT<=0){ gust=Math.random()<city.wind?1:0; gustT=(gust?1.2+Math.random()*1.5:3+Math.random()*5); if(gust&&city.wind>0.4) log('바람이 분다.'); }
+  yankCool=Math.max(0,yankCool-dt); catchCool=Math.max(0,catchCool-dt); yankFlash=Math.max(0,yankFlash-dt*3); bloom=Math.max(0,bloom-dt*0.8);
+  gustT-=dt; if(gustT<=0){ gust=Math.random()<city.wind?1:0; gustT=(gust?1.2+Math.random()*1.5:3+Math.random()*5); if(gust&&city.wind>0.4&&intro.stage>=3) log('바람이 분다.'); }
   if(inp.drop) toggleLeash();
   grip+= (inp.g-grip)*Math.min(1,dt*12);
 
@@ -383,20 +390,24 @@ function step(dt,inp){
   if(sniffTimer>0){
     sniffTimer-=dt; DV.x*=0.85; DV.y*=0.85;
     if(held && tension<0.25) dRap+=0.035*dt;
-    if(sniffTimer<=0 && target){ target.used=true; sniffCount++; log(dog.name+'이(가) '+target.k.line,'nice'); events.push(target.k.line); mood=Math.min(1,mood+0.12); target=null; }
+    if(sniffTimer<=0 && target){
+      target.used=true; sniffCount++; log(dog.name+'이(가) '+target.k.line,'nice'); events.push(target.k.line); mood=Math.min(1,mood+0.12);
+      if(target.first && intro.stage<3){ intro.stage=3; dRap+=0.14; bloom=1; say('색이 돌아온다. 냄새 맡게 두면 이렇게 된다.',4200,true); }
+      target=null;
+    }
   } else {
     if(!target||target.used||Math.random()<dt*0.15) target=chooseTarget();
     let wx=1,wy=-D.y*0.02, sp2=dog.speed*0.45;
     if(target){
       const dx=target.x-D.x, dy=target.y-D.y, dist=Math.hypot(dx,dy);
-      wx=dx/(dist||1); wy=dy/(dist||1); sp2=dog.speed*(target.k.moves?1.15:0.9);
+      wx=dx/(dist||1); wy=dy/(dist||1); sp2=dog.speed*(target.k.moves?1.15:target.first?1.1:0.9);
       const reachR=target.k.fly?target.k.r+dog.size+30:target.k.r+dog.size+4;
       if(dist<reachR){
-        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.6); }
+        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.6); if(target.first&&intro.stage<2){ intro.stage=2; say('냄새를 맡는다. 가만히 두자.',2600,true); } }
         else { target.used=true; log(dog.name+'이(가) '+target.k.line,'warn'); events.push(target.k.line); target=null; }
       }
     }
-    if(Math.random()<dt*dog.rest*0.35 && sniffTimer<=0){ sniffTimer=1.0+Math.random()*1.5; if(dog.rest>1) log(dog.name+'이(가) 멈춰 섰다.'); }
+    if(Math.random()<dt*dog.rest*0.35 && sniffTimer<=0 && intro.stage>=3){ sniffTimer=1.0+Math.random()*1.5; if(dog.rest>1) log(dog.name+'이(가) 멈춰 섰다.'); }
     DV.x+=(wx*sp2-DV.x)*Math.min(1,dt*4); DV.y+=(wy*sp2-DV.y)*Math.min(1,dt*4);
   }
 
@@ -413,11 +424,12 @@ function step(dt,inp){
       DV.x-=ux*F/md*dt; DV.y-=uy*F/md*dt;
       V.x +=ux*F/mp*dt*0.9; V.y+=uy*F/mp*dt*0.9;
       if(dist>LMAX){ const c=(dist-LMAX); D.x-=ux*c*md/(md+mp); D.y-=uy*c*md/(md+mp); P.x+=ux*c*mp/(md+mp); P.y+=uy*c*mp/(md+mp); }
+      if(ten>0.3 && intro.stage<1){ intro.stage=1; say('당긴다! 트리거(Shift)를 풀어 따라가 보세요.',3200,true); rumble(0.6,0.4,120); }
       if(ten>0.62 && yankCool<=0){
         yankCool=0.9; yankFlash=1; mood=Math.max(0,mood-(0.10+0.12*grip));
         dRap-=0.06+0.06*grip;
         rumble(0.9,0.5,140);
-        if(target && !target.used){ log('줄을 확 당겼다. '+dog.name+'이(가) 가고 싶었던 건 '+target.k.name+'.','warn'); events.push('줄을 확 당겨 '+target.k.name+'을(를) 못 보게 했다.'); }
+        if(target && !target.used && intro.stage>=3){ log('줄을 확 당겼다. '+dog.name+'이(가) 가고 싶었던 건 '+target.k.name+'.','warn'); events.push('줄을 확 당겨 '+target.k.name+'을(를) 못 보게 했다.'); }
         if(dog.mass>2 && grip>0.85) say('세게 잡을수록 더 당긴다.');
       } else if(ten>0.25 && !reduced) rumble(0.15*ten,0.35*ten,60);
       if(target && !target.used){ wantFor+=dt; if(wantFor>2.2){ mood=Math.max(0,mood-dt*0.06); dRap-=0.03*dt; } }
@@ -462,11 +474,11 @@ function finish(){
   endEl.classList.add('show');
 }
 
-/* ── 그림 ─── 잉크 카툰. 흑백과 컬러를 두 번 그리고 개를 중심으로 합만큼 컬러가 스며 나온다. */
+/* ── 그림 ─── 잉크 규칙대로: 납작한 면, 캐릭터에 톤 없음, 캐릭터 선이 배경 선보다 굵다. */
 let tone=null;
 function makeTones(){
-  const cc=document.createElement('canvas'); cc.width=cc.height=6; const g=cc.getContext('2d');
-  g.fillStyle='#111'; g.beginPath(); g.arc(3,3,1.15,0,6.28); g.fill(); tone=ctx.createPattern(cc,'repeat');
+  const cc=document.createElement('canvas'); cc.width=cc.height=INK.toneGap; const g=cc.getContext('2d');
+  g.fillStyle=INK.ink; g.beginPath(); g.arc(INK.toneGap/2,INK.toneGap/2,INK.toneR,0,6.28); g.fill(); tone=ctx.createPattern(cc,'repeat');
 }
 function resize(){
   DPR=Math.min(2,window.devicePixelRatio||1);
@@ -479,240 +491,258 @@ function resize(){
 }
 const sx=x=>x-camX, sy=y=>H*0.56+y;
 function isDark(hex){ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,gg=(n>>8)&255,b=n&255; return (r*0.299+gg*0.587+b*0.114)<90; }
-function mix(a,b,k){ const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16); const ch=s=>Math.round(((A>>s)&255)*(1-k)+((B>>s)&255)*k); return 'rgb('+ch(16)+','+ch(8)+','+ch(0)+')'; }
+function mix(a,b,k){ if(a.length===4) a='#'+a[1]+a[1]+a[2]+a[2]+a[3]+a[3]; const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16); const ch=s=>Math.round(((A>>s)&255)*(1-k)+((B>>s)&255)*k); return 'rgb('+ch(16)+','+ch(8)+','+ch(0)+')'; }
 
 function scene(g,color){
   const pal=city.pal;
   const C=(bw,co)=>color?co:bw;
-  const ink=w=>{ g.strokeStyle='#111'; g.lineWidth=w; g.lineJoin='round'; g.lineCap='round'; };
-  const vol=(x,y,r,base)=>{ const gr=g.createRadialGradient(x-r*0.35,y-r*0.45,r*0.08,x,y,r*1.15); gr.addColorStop(0,color?mix(base,'#ffffff',0.45):'#fff'); gr.addColorStop(0.55,base); gr.addColorStop(1,mix(base,'#000000',0.35)); return gr; };
-  const shadow=(x,y,rx,ry,a)=>{ const gr=g.createRadialGradient(x,y,0,x,y,rx); gr.addColorStop(0,'rgba(0,0,0,'+a+')'); gr.addColorStop(0.7,'rgba(0,0,0,'+(a*0.35)+')'); gr.addColorStop(1,'rgba(0,0,0,0)'); g.fillStyle=gr; g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.fill(); };
+  const ink=w=>{ g.strokeStyle=INK.ink; g.lineWidth=w; g.lineJoin='round'; g.lineCap='round'; };
+  const shadeOf=base=>color?mix(base,'#000000',0.18):INK.grey;                 // 그늘 면: 회색 한 톤
+  const shadow=(x,y,rx,ry)=>{ g.fillStyle=color?'rgba(0,0,0,.16)':INK.grey; g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.fill(); };
   const toneClip=(path,side)=>{ if(color) return; g.save(); path(); g.clip(); g.fillStyle=tone; g.fillRect(side.x,side.y,side.w,side.h); g.restore(); };
-  const box=(x,y,w,h,fill)=>{ g.fillStyle=fill; g.fillRect(x,y,w,h); ink(2.5); g.strokeRect(x,y,w,h); };
+  const box=(x,y,w,h,fill,lw)=>{ g.fillStyle=fill; g.fillRect(x,y,w,h); ink(lw||INK.lineBg); g.strokeRect(x,y,w,h); };
+  // 둥근 형태 + 오른쪽 아래 납작한 그늘 면 + 외곽선
+  const blob=(x,y,rx,ry,base,lw)=>{
+    g.fillStyle=base; g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.fill();
+    g.save(); g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.clip();
+    g.fillStyle=shadeOf(base); g.beginPath(); g.ellipse(x+rx*0.28,y+ry*0.3,rx,ry,0,0,6.28); g.fill();
+    g.fillStyle=base; g.beginPath(); g.ellipse(x-rx*0.18,y-ry*0.2,rx,ry,0,0,6.28); g.fill();
+    g.restore();
+    ink(lw||INK.lineBg); g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.stroke();
+  };
 
   // 종이와 하늘
-  const pg=g.createRadialGradient(W*0.5,H*0.45,H*0.2,W*0.5,H*0.5,W*0.75);
-  pg.addColorStop(0,C('#FFFFFF','#FFFDF6')); pg.addColorStop(1,C('#ECECE7','#F3EBDA')); g.fillStyle=pg; g.fillRect(0,0,W,H);
-  const sk=g.createLinearGradient(0,0,0,H*0.36); sk.addColorStop(0,C(pal.skyBW,pal.sky)); sk.addColorStop(1,C('#FFFFFF','#FFFDF6'));
-  g.fillStyle=sk; g.fillRect(0,0,W,H*0.36);
+  g.fillStyle=C(INK.paper,'#FFFDF6'); g.fillRect(0,0,W,H);
+  g.fillStyle=C(pal.skyBW,pal.sky); g.fillRect(0,0,W,H*0.36);
+  if(!color){ g.save(); g.beginPath(); g.rect(0,0,W,H*0.12); g.clip(); g.globalAlpha=0.35; g.fillStyle=tone; g.fillRect(0,0,W,H*0.12); g.restore(); g.globalAlpha=1; } // 하늘 윗부분만 옅은 톤
 
   // 지평선: 바다 또는 언덕
   if(city.horizon==='sea'){
-    const sea=g.createLinearGradient(0,H*0.19,0,H*0.36); sea.addColorStop(0,C('#C6C6C1',pal.far)); sea.addColorStop(1,C('#B0B0AB',pal.water));
-    g.fillStyle=sea; g.fillRect(0,H*0.19,W,H*0.17);
-    ink(2); g.beginPath(); g.moveTo(0,H*0.19); g.lineTo(W,H*0.19); g.stroke();
-    g.strokeStyle=C('#fff','#EAF6FB'); g.lineWidth=1.6;
-    for(let i=0;i<6;i++){ const yy=H*0.22+i*H*0.022, ph=(t*0.8+i)*1.3, xo=-((camX*0.15+i*37)%90); for(let x=xo;x<W;x+=90){ g.beginPath(); g.moveTo(x+Math.sin(ph)*4,yy); g.quadraticCurveTo(x+14,yy-3,x+28,yy); g.stroke(); } }
-    // 멀리 배 한 척
-    const bx=W*0.72-((camX*0.05)%(W*1.4)); g.fillStyle=C('#111','#2E3A48'); g.fillRect(bx,H*0.215,26,5); g.fillRect(bx+9,H*0.196,5,8); ink(1.5); g.strokeRect(bx,H*0.215,26,5);
+    g.fillStyle=C('#E4E4DF',pal.far); g.fillRect(0,H*0.19,W,H*0.17);
+    ink(INK.lineBg); g.beginPath(); g.moveTo(0,H*0.19); g.lineTo(W,H*0.19); g.stroke();
+    g.strokeStyle=C(INK.ink,'#EAF6FB'); g.lineWidth=1.4;
+    for(let i=0;i<5;i++){ const yy=H*0.225+i*H*0.026, ph=(t*0.8+i)*1.3, xo=-((camX*0.15+i*37)%90); for(let x=xo;x<W;x+=90){ g.beginPath(); g.moveTo(x+Math.sin(ph)*4,yy); g.quadraticCurveTo(x+14,yy-3,x+28,yy); g.stroke(); } }
+    const bx=W*0.72-((camX*0.05)%(W*1.4)); g.fillStyle=C('#fff','#2E3A48'); g.fillRect(bx,H*0.215,26,5); g.fillRect(bx+9,H*0.196,5,8); ink(1.5); g.strokeRect(bx,H*0.215,26,5); g.strokeRect(bx+9,H*0.196,5,8);
   } else {
-    const far=C('#DDDDD8',pal.far), near=C('#CFCFCA',mix(pal.far,'#000000',0.18));
-    g.fillStyle=far; g.beginPath(); g.moveTo(0,H*0.36); for(let x=0;x<=W;x+=20){ const xx=x+camX*0.05; g.lineTo(x,H*0.30-Math.sin(xx*0.006)*H*0.05-Math.sin(xx*0.017)*H*0.02); } g.lineTo(W,H*0.36); g.closePath(); g.fill(); ink(2); g.stroke();
-    g.fillStyle=near; g.beginPath(); g.moveTo(0,H*0.36); for(let x=0;x<=W;x+=20){ const xx=x+camX*0.12+400; g.lineTo(x,H*0.34-Math.sin(xx*0.008)*H*0.04); } g.lineTo(W,H*0.36); g.closePath(); g.fill(); ink(2); g.stroke();
+    g.fillStyle=C('#fff',pal.far); g.beginPath(); g.moveTo(0,H*0.36); for(let x=0;x<=W;x+=20){ const xx=x+camX*0.05; g.lineTo(x,H*0.30-Math.sin(xx*0.006)*H*0.05-Math.sin(xx*0.017)*H*0.02); } g.lineTo(W,H*0.36); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke();
+    g.fillStyle=C(INK.grey,mix(pal.far,'#000000',0.18)); g.beginPath(); g.moveTo(0,H*0.36); for(let x=0;x<=W;x+=20){ const xx=x+camX*0.12+400; g.lineTo(x,H*0.34-Math.sin(xx*0.008)*H*0.04); } g.lineTo(W,H*0.36); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke();
   }
 
-  // 건물 양식
+  // 건물 양식 — 톤은 옆면에만
   if(city.style==='seaside'){
     for(let x=-((camX*0.35)%150)-150;x<W;x+=150){
       const bx=x,by=H*0.22,bw=104,bh=H*0.14;
       box(bx,by,bw,bh,C(pal.wallBW,pal.wall));
-      if(!color){ g.save(); g.beginPath(); g.rect(bx+bw*0.62,by,bw*0.38,bh); g.clip(); g.fillStyle=tone; g.fillRect(bx,by,bw,bh); g.restore(); } else { g.fillStyle='rgba(0,0,0,.07)'; g.fillRect(bx+bw*0.62,by,bw*0.38,bh); }
-      g.fillStyle=C('#111',pal.roof); g.fillRect(bx-5,by-8,bw+10,8);                                   // 평지붕
-      // 줄무늬 차양과 간판
-      for(let i=0;i<6;i++){ g.fillStyle=(i%2?C('#fff','#fff'):C('#111','#D8503A')); g.fillRect(bx+8+i*14,by+bh*0.42,14,7); }
-      ink(1.8); g.strokeRect(bx+8,by+bh*0.42,84,7);
-      box(bx+14,by+bh*0.12,72,bh*0.22,C('#fff','#FFF4DC'));
-      g.fillStyle='#111'; g.fillRect(bx+20,by+bh*0.19,20,3); g.fillRect(bx+46,by+bh*0.19,28,3);
-      box(bx+bw*0.4,by+bh*0.62,bw*0.2,bh*0.38,C('#111','#5A6B8C'));
+      if(!color) toneClip(()=>{g.beginPath(); g.rect(bx+bw*0.62,by,bw*0.38,bh);},{x:bx,y:by,w:bw,h:bh}); else { g.fillStyle='rgba(0,0,0,.07)'; g.fillRect(bx+bw*0.62,by,bw*0.38,bh); }
+      g.fillStyle=C(INK.ink,pal.roof); g.fillRect(bx-5,by-8,bw+10,8);
+      for(let i=0;i<6;i++){ g.fillStyle=(i%2?'#fff':C(INK.ink,'#D8503A')); g.fillRect(bx+8+i*14,by+bh*0.42,14,7); }
+      ink(INK.lineIn); g.strokeRect(bx+8,by+bh*0.42,84,7);
+      box(bx+14,by+bh*0.12,72,bh*0.22,C('#fff','#FFF4DC'),INK.lineIn);
+      g.fillStyle=INK.ink; g.fillRect(bx+20,by+bh*0.19,20,3); g.fillRect(bx+46,by+bh*0.19,28,3);
+      box(bx+bw*0.4,by+bh*0.62,bw*0.2,bh*0.38,C(INK.ink,'#5A6B8C'),INK.lineIn);
     }
   } else {
     for(let x=-((camX*0.35)%160)-160;x<W;x+=160){
       const bx=x,by=H*0.24,bw=118,bh=H*0.12;
-      box(bx,by,bw,bh,C(pal.wallBW,pal.wall));                                                        // 흙담
-      g.fillStyle=C('#111','#8B5E3C'); g.fillRect(bx+10,by,6,bh); g.fillRect(bx+bw-16,by,6,bh);        // 기둥
-      // 기와 지붕: 양끝이 살짝 올라간 곡선
-      g.fillStyle=C('#111',pal.roof); g.beginPath(); g.moveTo(bx-14,by-4); g.quadraticCurveTo(bx+bw*0.5,by-H*0.075,bx+bw+14,by-4); g.lineTo(bx+bw+8,by+2); g.quadraticCurveTo(bx+bw*0.5,by-H*0.04,bx-8,by+2); g.closePath(); g.fill(); ink(2.5); g.stroke();
+      box(bx,by,bw,bh,C(pal.wallBW,pal.wall));
+      if(!color) toneClip(()=>{g.beginPath(); g.rect(bx,by,bw,bh*0.28);},{x:bx,y:by,w:bw,h:bh}); // 처마 밑 그늘
+      g.fillStyle=C(INK.ink,'#8B5E3C'); g.fillRect(bx+10,by,6,bh); g.fillRect(bx+bw-16,by,6,bh);
+      g.fillStyle=C(INK.ink,pal.roof); g.beginPath(); g.moveTo(bx-14,by-4); g.quadraticCurveTo(bx+bw*0.5,by-H*0.075,bx+bw+14,by-4); g.lineTo(bx+bw+8,by+2); g.quadraticCurveTo(bx+bw*0.5,by-H*0.04,bx-8,by+2); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke();
       g.strokeStyle=C('#fff','#9A9A96'); g.lineWidth=1.2; for(let i=0;i<8;i++){ const xx=bx+2+i*15; g.beginPath(); g.moveTo(xx,by-2); g.quadraticCurveTo(xx+2,by-H*0.03,xx+4,by-H*0.05); g.stroke(); }
-      box(bx+bw*0.38,by+bh*0.25,bw*0.24,bh*0.75,C('#fff','#C9A27A'));                                  // 나무 문
-      g.strokeStyle='#111'; g.lineWidth=1.5; g.beginPath(); g.moveTo(bx+bw*0.5,by+bh*0.25); g.lineTo(bx+bw*0.5,by+bh); g.stroke();
+      box(bx+bw*0.38,by+bh*0.25,bw*0.24,bh*0.75,C('#fff','#C9A27A'),INK.lineIn);
+      g.strokeStyle=INK.ink; g.lineWidth=INK.lineIn; g.beginPath(); g.moveTo(bx+bw*0.5,by+bh*0.25); g.lineTo(bx+bw*0.5,by+bh); g.stroke();
     }
   }
 
   // 인도와 길
   g.fillStyle=C(pal.walkBW,pal.walk); g.fillRect(0,H*0.36,W,H*0.5);
-  ink(1.2); g.strokeStyle=C('#B9B9B4','#CDBFA5');
+  g.strokeStyle=C('#DADAD5','#CDBFA5'); g.lineWidth=1;
   for(let x=-((camX)%80);x<W;x+=80){ g.beginPath(); g.moveTo(x,H*0.36); g.lineTo(x,H*0.86); g.stroke(); }
-  ink(3); g.beginPath(); g.moveTo(0,H*0.36); g.lineTo(W,H*0.36); g.stroke();
-  ink(4); g.beginPath(); g.moveTo(0,H*0.86); g.lineTo(W,H*0.86); g.stroke();
-  const rd=g.createLinearGradient(0,H*0.86,0,H); rd.addColorStop(0,C('#3a3a38',pal.roadA)); rd.addColorStop(1,C('#111',pal.roadB)); g.fillStyle=rd; g.fillRect(0,H*0.86+2,W,H);
+  ink(INK.lineBg); g.beginPath(); g.moveTo(0,H*0.36); g.lineTo(W,H*0.36); g.stroke();
+  ink(INK.lineChar); g.beginPath(); g.moveTo(0,H*0.86); g.lineTo(W,H*0.86); g.stroke();
+  g.fillStyle=C(INK.ink,pal.roadB); g.fillRect(0,H*0.86+2,W,H);
   if(city.style==='seaside'){ g.strokeStyle=C('#fff','#F2D66B'); g.lineWidth=2; g.setLineDash([26,22]); g.beginPath(); g.moveTo(-((camX)%48),H*0.95); g.lineTo(W,H*0.95); g.stroke(); g.setLineDash([]); }
-  else { g.strokeStyle=C('#8a8a86','#8A7A66'); g.lineWidth=1.4; for(let x=-((camX)%34);x<W;x+=34){ g.beginPath(); g.moveTo(x,H*0.86+2); g.lineTo(x-6,H); g.stroke(); } }
+  else { g.strokeStyle=C('#fff','#8A7A66'); g.lineWidth=1.4; for(let x=-((camX)%34);x<W;x+=34){ g.beginPath(); g.moveTo(x,H*0.86+2); g.lineTo(x-6,H); g.stroke(); } }
 
-  // 바람
   if(gust&&!reduced){ ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); for(let i=0;i<4;i++){ const yy=H*0.4+i*H*0.11, xx=((t*260+i*170)%(W+160))-80; g.beginPath(); g.moveTo(xx,yy); g.quadraticCurveTo(xx+22,yy-4,xx+48,yy); g.stroke(); } }
 
   // 그 동네의 것들
   for(const s of spots){
     const x=sx(s.x); if(x<-60||x>W+60) continue;
     const y=sy(s.y); const k=s.k;
-    g.globalAlpha=s.used?0.4:1;
-    drawSpot(g,k.k,x,y,k,{C,ink,vol,shadow,toneClip,box,s});
+    g.globalAlpha=s.used?0.45:1;
+    drawSpot(g,k.k,x,y,k,{C,ink,blob,shadow,box,shadeOf,s});
     g.globalAlpha=1;
-    if(!s.used && target===s && sniffTimer<=0 && held){ ink(1.5); g.strokeStyle=C('#111','#E8562D'); g.setLineDash([3,4]); g.beginPath(); g.arc(x,y,k.r+10+Math.sin(t*6)*2,0,6.28); g.stroke(); g.setLineDash([]); }
+    if(!s.used && target===s && sniffTimer<=0 && held){ ink(1.5); g.strokeStyle=C(INK.ink,INK.leash); g.setLineDash([3,4]); g.beginPath(); g.arc(x,y,k.r+10+Math.sin(t*6)*2,0,6.28); g.stroke(); g.setLineDash([]); }
   }
 
   const px=sx(P.x),py=sy(P.y),dx=sx(D.x),dy=sy(D.y);
-  shadow(px,py+30,16,5,0.32);
-  shadow(dx,dy+dog.size*0.7,dog.size*1.3,dog.size*0.4,0.32);
+  shadow(px,py+31,15,4.5);
+  shadow(dx,dy+dog.size*0.72,dog.size*1.25,dog.size*0.34);
 
+  // 줄 — 가장 굵고 가장 검다
   if(held){
     const dist=Math.hypot(dx-px,dy-py), slack=Math.max(0,L0-dist);
     const mx=(px+dx)/2, my=(py+dy)/2+slack*0.55+6;
-    ink(3.2+tension*3.5); g.strokeStyle=C('#111','#E8562D');
-    g.beginPath(); g.moveTo(px+7,py-14); g.quadraticCurveTo(mx,my,dx,dy-4); g.stroke();
+    ink(INK.lineChar+tension*3); g.strokeStyle=C(INK.ink,INK.leash);
+    g.beginPath(); g.moveTo(px+9,py-12); g.quadraticCurveTo(mx,my,dx+dog.size*0.4,dy-dog.size*0.15); g.stroke();
     if(tension>0.5 && !reduced){ ink(1.4); const n=(dx-px)/dist, m=(dy-py)/dist;
       for(let i=1;i<=3;i++){ const q=0.3+i*0.15, qx=px+(dx-px)*q, qy=py+(dy-py)*q, o=4+tension*3;
         g.beginPath(); g.moveTo(qx-m*o,qy+n*o); g.lineTo(qx-m*o*1.9,qy+n*o*1.9); g.moveTo(qx+m*o,qy-n*o); g.lineTo(qx+m*o*1.9,qy-n*o*1.9); g.stroke(); } }
   }
 
-  // 개
-  const S=dog.size, wag=reduced?0:Math.sin(t*(sniffTimer>0?14:8))*0.5;
-  const moving=Math.hypot(DV.x,DV.y)>20, leg=moving&&!reduced?Math.sin(t*13)*S*0.35:0;
-  const base=C(dog.bw,dog.co), dark=isDark(base);
-  ink(2.6);
-  g.beginPath(); g.moveTo(dx-S*0.5,dy+S*0.4); g.lineTo(dx-S*0.5-leg,dy+S*0.95); g.moveTo(dx+S*0.5,dy+S*0.4); g.lineTo(dx+S*0.5+leg,dy+S*0.95); g.stroke();
-  g.fillStyle=vol(dx,dy,S*1.1,base); g.beginPath(); g.ellipse(dx,dy,S*1.1,S*0.62,0,0,6.28); g.fill(); ink(3); g.stroke();
-  if(!dark) toneClip(()=>{g.beginPath(); g.ellipse(dx,dy,S*1.1,S*0.62,0,0,6.28);},{x:dx,y:dy,w:S*1.2,h:S});
-  if(dog.spots){ g.fillStyle=C('#111','#5A4636'); g.beginPath(); g.ellipse(dx-S*0.3,dy-S*0.1,S*0.32,S*0.22,0.3,0,6.28); g.fill(); }
-  g.fillStyle=vol(dx+S*0.95,dy-S*0.35,S*0.5,base); g.beginPath(); g.arc(dx+S*0.95,dy-S*0.35,S*0.5,0,6.28); g.fill(); ink(3); g.stroke();
-  g.fillStyle=C('#111',dark?'#1c1a19':'#7A5A3A'); g.beginPath(); g.ellipse(dx+S*0.72,dy-S*0.55,S*0.16,S*0.34,0.5,0,6.28); g.fill();
-  ink(3); g.beginPath(); g.moveTo(dx-S*1.05,dy-2); g.quadraticCurveTo(dx-S*1.6,dy-10-wag*10,dx-S*1.5,dy-16-wag*8); g.stroke();
-  g.fillStyle=dark?'#fff':'#111'; g.beginPath(); g.arc(dx+S*1.15,dy-S*0.42,2.2,0,6.28); g.fill();
-  g.fillStyle='#111'; g.beginPath(); g.arc(dx+S*1.42,dy-S*0.28,2.4,0,6.28); g.fill();
-  if(color||rapShown>0.2){ g.strokeStyle='#E8562D'; g.lineWidth=3; g.beginPath(); g.arc(dx+S*0.72,dy-S*0.2,S*0.42,-0.9,1.2); g.stroke(); }
-  if(yankFlash>0){ ink(2.2); g.globalAlpha=yankFlash; for(let i=0;i<3;i++){ const a=-0.9+i*0.5; g.beginPath(); g.moveTo(dx+S*1.6+Math.cos(a)*8,dy-S*0.9+Math.sin(a)*8); g.lineTo(dx+S*1.6+Math.cos(a)*18,dy-S*0.9+Math.sin(a)*18); g.stroke(); } g.globalAlpha=1; }
-  if(!held){ g.font='700 15px Gaegu'; g.fillStyle='#111'; g.textAlign='center'; g.fillText('풀렸다!',dx,dy-S-16); }
+  drawDog(g,dx,dy,C,ink,blob,shadeOf,color);
+  drawWalker(g,px,py,C,ink,blob);
 
-  // 사람
-  const lean=held?(-tension*10):0, walking=Math.hypot(V.x,V.y)>15, lg=walking&&!reduced?Math.sin(t*11)*6:0;
-  ink(3); g.beginPath(); g.moveTo(px-3,py+14); g.lineTo(px-3-lg,py+29); g.moveTo(px+3,py+14); g.lineTo(px+3+lg,py+29); g.stroke();
-  g.fillStyle=vol(px,py,20,C('#2e2e2c','#3F5A8A')); g.beginPath(); g.ellipse(px+lean*0.3,py-2,9.5,20,lean*0.015,0,6.28); g.fill(); ink(3); g.stroke();
-  g.fillStyle=vol(px,py-30,9,C('#ececE8','#F2CDA8')); g.beginPath(); g.arc(px+lean*0.5,py-30,8.5,0,6.28); g.fill(); ink(3); g.stroke();
-  toneClip(()=>{g.beginPath(); g.arc(px+lean*0.5,py-30,8.5,0,6.28);},{x:px+lean*0.5,y:py-39,w:9,h:18});
-  g.fillStyle=C('#111','#2B2118'); g.beginPath(); g.arc(px+lean*0.5,py-36,8.5,Math.PI,0); g.fill();
-  ink(3); g.beginPath(); g.moveTo(px+4,py-10); g.lineTo(px+8,py-14); g.stroke();
-  g.fillStyle=held?C('#111','#E8562D'):'#fff'; g.beginPath(); g.arc(px+8,py-14,3.2+grip*2,0,6.28); g.fill(); ink(2.2); g.stroke();
-
-  const vg=g.createRadialGradient(W*0.5,H*0.5,H*0.5,W*0.5,H*0.5,W*0.8); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.14)');
-  g.fillStyle=vg; g.fillRect(0,0,W,H);
+  if(!color && bloom<=0){ const vg=g.createRadialGradient(W*0.5,H*0.5,H*0.55,W*0.5,H*0.5,W*0.8); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.10)'); g.fillStyle=vg; g.fillRect(0,0,W,H); }
 }
 
-/* ── 그 동네의 것들을 그린다. 새 종류는 여기에 case를 더한다. ─── */
+/* ── 개: 머리:몸 1:1, 점 눈, 코 점, 뭉툭한 다리. 톤 없음. ─── */
+function drawDog(g,dx,dy,C,ink,blob,shadeOf,color){
+  const S=dog.size, base=C(dog.bw,dog.co), dark=isDark(base);
+  const moving=Math.hypot(DV.x,DV.y)>20, leg=moving&&!reduced?Math.sin(t*13)*S*0.32:0;
+  const sniff=sniffTimer>0, wag=reduced?0:Math.sin(t*(sniff?15:8))*0.5;
+  const lean=held?Math.max(-1,Math.min(1,-tension*1.1)):0;                    // 당겨지면 몸이 뒤로
+  const bob=moving&&!reduced?Math.abs(Math.sin(t*13))*S*0.08:0;
+  const hx=dx+S*0.72+lean*S*0.1, hy=dy-S*0.62-bob+(sniff?S*0.35:0);            // 머리 — 냄새 맡을 땐 내려간다
+  const R=S*0.66*INK.headRatio;
+  // 다리 4개 (뒤 2, 앞 2)
+  ink(INK.lineChar); g.strokeStyle=INK.ink;
+  const legs=[[-S*0.55,-1],[-S*0.3,1],[S*0.25,1],[S*0.5,-1]];
+  for(const [ox,dir] of legs){ g.beginPath(); g.moveTo(dx+ox,dy+S*0.3); g.lineTo(dx+ox+dir*leg,dy+S*0.72); g.stroke(); }
+  // 꼬리
+  ink(INK.lineChar); g.beginPath(); g.moveTo(dx-S*0.95,dy-S*0.05); g.quadraticCurveTo(dx-S*1.35,dy-S*0.55-wag*S*0.5,dx-S*1.2,dy-S*0.9-wag*S*0.4); g.stroke();
+  // 몸
+  blob(dx,dy-bob,S*1.0,S*0.5,base,INK.lineChar);
+  if(dog.spots){ g.fillStyle=C(INK.ink,'#5A4636'); g.beginPath(); g.ellipse(dx-S*0.25,dy-S*0.08,S*0.3,S*0.2,0.3,0,6.28); g.fill(); }
+  // 귀 (머리 뒤에 먼저)
+  g.fillStyle=dark?C('#3a3a38',mix(base,'#000',0.25)):C(INK.grey,mix(base,'#000',0.3));
+  if(dog.earDown){ g.beginPath(); g.ellipse(hx-R*0.55,hy+R*0.15,R*0.32,R*0.62,0.2,0,6.28); g.fill(); ink(INK.lineChar); g.stroke(); }
+  else { g.beginPath(); g.moveTo(hx-R*0.6,hy-R*0.3); g.lineTo(hx-R*0.45,hy-R*1.25); g.lineTo(hx-R*0.05,hy-R*0.75); g.closePath(); g.fill(); ink(INK.lineChar); g.stroke(); }
+  // 머리
+  blob(hx,hy,R,R*0.92,base,INK.lineChar);
+  // 주둥이 — 살짝 앞으로
+  blob(hx+R*0.62,hy+R*0.22,R*0.42,R*0.32,base,INK.lineIn+0.5);
+  // 눈 하나(옆모습) — 점. 코 — 점.
+  g.fillStyle=dark?'#fff':INK.ink; g.beginPath(); g.arc(hx+R*0.18,hy-R*0.12,S*INK.eye,0,6.28); g.fill();
+  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*1.0,hy+R*0.1,S*INK.eye*0.95,0,6.28); g.fill();
+  if(sniff&&!reduced){ ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); const w=Math.sin(t*9)*2; g.beginPath(); g.moveTo(hx+R*1.15,hy+R*0.35); g.quadraticCurveTo(hx+R*1.4+w,hy+R*0.55,hx+R*1.3,hy+R*0.9); g.stroke(); }
+  // 목줄 — 합 20% 넘으면 흑백에서도 붉다
+  if(color||rapShown>0.2){ g.strokeStyle=INK.leash; g.lineWidth=INK.lineChar; g.beginPath(); g.arc(hx-R*0.05,hy+R*0.55,R*0.55,-0.35,1.35); g.stroke(); }
+  if(yankFlash>0){ ink(2.2); g.strokeStyle=INK.ink; g.globalAlpha=yankFlash; for(let i=0;i<3;i++){ const a=-1.1+i*0.45; g.beginPath(); g.moveTo(hx+R*0.9+Math.cos(a)*R*0.9,hy-R*0.7+Math.sin(a)*R*0.9); g.lineTo(hx+R*0.9+Math.cos(a)*R*1.6,hy-R*0.7+Math.sin(a)*R*1.6); g.stroke(); } g.globalAlpha=1; }
+  if(!held){ g.font='700 15px Gaegu'; g.fillStyle=INK.ink; g.textAlign='center'; g.fillText('풀렸다!',dx,dy-S-22); }
+}
+
+/* ── 사람: 큰 둥근 머리, 작은 몸, 점 눈. 톤 없음. ─── */
+function drawWalker(g,px,py,C,ink,blob){
+  const lean=held?(-tension*12):0, walking=Math.hypot(V.x,V.y)>15, lg=walking&&!reduced?Math.sin(t*11)*5:0;
+  const bob=walking&&!reduced?Math.abs(Math.sin(t*11))*1.2:0;
+  const R=13, bx=px+lean*0.25, by=py-bob;
+  ink(INK.lineChar); g.strokeStyle=INK.ink;
+  g.beginPath(); g.moveTo(bx-3,by+12); g.lineTo(bx-3-lg,by+27); g.moveTo(bx+3,by+12); g.lineTo(bx+3+lg,by+27); g.stroke();
+  blob(bx,by+2,8,12,C('#fff','#3F5A8A'),INK.lineChar);                          // 작은 몸
+  ink(INK.lineChar); g.beginPath(); g.moveTo(bx+5,by-2); g.lineTo(bx+9,by-12); g.stroke(); // 팔
+  const hx=bx+lean*0.4, hy=by-19;
+  blob(hx,hy,R,R*0.96,C('#fff','#F2CDA8'),INK.lineChar);                         // 큰 머리
+  g.fillStyle=C(INK.ink,'#2B2118'); g.beginPath(); g.arc(hx,hy-2,R,Math.PI*1.05,Math.PI*1.95); g.lineTo(hx+R*0.9,hy-R*0.55); g.quadraticCurveTo(hx,hy-R*0.45,hx-R*0.9,hy-R*0.55); g.closePath(); g.fill(); // 머리카락
+  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*0.35,hy+R*0.05,1.9,0,6.28); g.fill();   // 점 눈
+  g.fillStyle=C('#fff','#F2CDA8'); g.beginPath(); g.arc(hx+R*0.55,hy+R*0.35,2.2,0,6.28); g.fill(); ink(1.2); g.stroke(); // 볼
+  g.fillStyle=held?C(INK.ink,INK.leash):'#fff'; g.beginPath(); g.arc(bx+9,by-12,3+grip*2,0,6.28); g.fill(); ink(2); g.stroke(); // 손
+}
+
+/* ── 그 동네의 것들. 새 종류는 case를 더한다. 소품에도 톤 없음. ─── */
 function drawSpot(g,kind,x,y,k,h){
-  const {C,ink,vol,shadow,toneClip,box,s}=h;
+  const {C,ink,blob,shadow,box,shadeOf,s}=h;
   switch(kind){
     case 'tree':
-      shadow(x,y+10,22,7,0.28);
-      box(x-3,y-6,6,20,C('#fff','#8B5E3C'));
-      g.fillStyle=vol(x,y-16,k.r,C('#ececE8','#7FB069')); g.beginPath(); g.arc(x,y-16,k.r,0,6.28); g.fill(); ink(3); g.stroke();
-      toneClip(()=>{g.beginPath(); g.arc(x,y-16,k.r,0,6.28);},{x:x,y:y-16-k.r,w:k.r,h:k.r*2}); break;
+      shadow(x,y+10,20,6); box(x-3,y-6,6,20,C('#fff','#8B5E3C'),INK.lineBg);
+      blob(x,y-16,k.r,k.r,C('#fff','#7FB069')); break;
     case 'persimmon':
-      shadow(x,y+10,22,7,0.28);
-      box(x-3,y-6,6,20,C('#fff','#6E4A2E'));
-      g.fillStyle=vol(x,y-16,k.r,C('#ececE8','#6F9A58')); g.beginPath(); g.arc(x,y-16,k.r,0,6.28); g.fill(); ink(3); g.stroke();
-      toneClip(()=>{g.beginPath(); g.arc(x,y-16,k.r,0,6.28);},{x:x,y:y-16-k.r,w:k.r,h:k.r*2});
-      g.fillStyle=C('#111','#E9862A'); for(const [ox,oy] of [[-7,-22],[5,-12],[9,-24],[-2,-8],[-10,-10]]){ g.beginPath(); g.arc(x+ox,y+oy,3.2,0,6.28); g.fill(); }
+      shadow(x,y+10,20,6); box(x-3,y-6,6,20,C('#fff','#6E4A2E'),INK.lineBg);
+      blob(x,y-16,k.r,k.r,C('#fff','#6F9A58'));
+      g.fillStyle=C(INK.ink,'#E9862A'); for(const [ox,oy] of [[-7,-22],[5,-12],[9,-24],[-2,-8],[-10,-10]]){ g.beginPath(); g.arc(x+ox,y+oy,3.2,0,6.28); g.fill(); }
       g.beginPath(); g.arc(x+12,y+2,3,0,6.28); g.fill(); break;
     case 'lamp':
-      shadow(x,y+4,10,4,0.25);
-      box(x-2.5,y-48,5,52,C('#fff','#6B6F7A'));
-      g.fillStyle=vol(x,y-52,7,C('#ececE8','#FFD96B')); g.beginPath(); g.arc(x,y-52,7,0,6.28); g.fill(); ink(2.5); g.stroke(); break;
+      shadow(x,y+4,9,3.5); box(x-2.5,y-48,5,52,C('#fff','#6B6F7A'),INK.lineBg);
+      blob(x,y-52,7,7,C('#fff','#FFD96B')); break;
     case 'grass': case 'pud':
-      g.fillStyle=kind==='pud'?C('#d9d9d4','#A9D3E6'):C('#fff','#9DC57A'); g.beginPath(); g.ellipse(x,y+4,k.r,k.r*0.45,0,0,6.28); g.fill(); ink(2.2); g.stroke();
-      toneClip(()=>{g.beginPath(); g.ellipse(x,y+4,k.r,k.r*0.45,0,0,6.28);},{x:x-k.r,y:y+4,w:k.r*2,h:k.r});
-      if(kind==='grass'){ ink(1.6); g.strokeStyle=C('#111','#4F7A3A'); for(let i=-2;i<=2;i++){ g.beginPath(); g.moveTo(x+i*7,y+2); g.lineTo(x+i*7+2,y-8); g.stroke(); } } break;
+      g.fillStyle=kind==='pud'?C(INK.grey,'#A9D3E6'):C('#fff','#9DC57A'); g.beginPath(); g.ellipse(x,y+4,k.r,k.r*0.45,0,0,6.28); g.fill(); ink(INK.lineBg); g.stroke();
+      if(kind==='grass'){ ink(INK.lineIn); g.strokeStyle=C(INK.ink,'#4F7A3A'); for(let i=-2;i<=2;i++){ g.beginPath(); g.moveTo(x+i*7,y+2); g.lineTo(x+i*7+2,y-8); g.stroke(); } } break;
     case 'cat':
-      shadow(x,y+6,12,4,0.25);
-      g.fillStyle=vol(x,y,10,C('#2e2e2c','#6C5B7B')); g.beginPath(); g.ellipse(x,y,10,5.5,0,0,6.28); g.fill(); ink(2.5); g.stroke();
-      g.beginPath(); g.arc(x+9,y-3,4.5,0,6.28); g.fill(); g.stroke();
-      g.beginPath(); g.moveTo(x+6,y-6); g.lineTo(x+8,y-10); g.lineTo(x+10,y-6); g.moveTo(x+10,y-6); g.lineTo(x+12,y-10); g.lineTo(x+13,y-5); g.stroke();
-      ink(2.5); g.beginPath(); g.moveTo(x-10,y); g.quadraticCurveTo(x-20,y-8,x-16,y-16); g.stroke();
+      shadow(x,y+6,11,3.5);
+      blob(x,y,10,5.5,C(INK.ink,'#6C5B7B')); blob(x+9,y-3,4.5,4.5,C(INK.ink,'#6C5B7B'));
+      ink(INK.lineBg); g.beginPath(); g.moveTo(x+6,y-6); g.lineTo(x+8,y-10); g.lineTo(x+10,y-6); g.moveTo(x+10,y-6); g.lineTo(x+12,y-10); g.lineTo(x+13,y-5); g.stroke();
+      g.beginPath(); g.moveTo(x-10,y); g.quadraticCurveTo(x-20,y-8,x-16,y-16); g.stroke();
       g.fillStyle=C('#fff','#F2E86B'); g.beginPath(); g.arc(x+10.5,y-3.5,1.2,0,6.28); g.fill(); break;
     case 'gull':{
-      const f=Math.sin(s.ph*9)*5; ink(2.6); g.strokeStyle='#111';
+      const f=Math.sin(s.ph*9)*5; ink(INK.lineBg+0.5); g.strokeStyle=INK.ink;
       g.beginPath(); g.moveTo(x-12,y+f*0.6); g.quadraticCurveTo(x-6,y-6+f,x,y); g.quadraticCurveTo(x+6,y-6+f,x+12,y+f*0.6); g.stroke();
       g.fillStyle=C('#fff','#F4F7F9'); g.beginPath(); g.ellipse(x,y+1,5,2.6,0,0,6.28); g.fill(); ink(1.5); g.stroke();
-      g.fillStyle=C('#111','#E9A23B'); g.beginPath(); g.moveTo(x+5,y); g.lineTo(x+9,y+1); g.lineTo(x+5,y+2); g.closePath(); g.fill(); break; }
+      g.fillStyle=C(INK.ink,'#E9A23B'); g.beginPath(); g.moveTo(x+5,y); g.lineTo(x+9,y+1); g.lineTo(x+5,y+2); g.closePath(); g.fill(); break; }
     case 'dog2':
-      shadow(x,y+7,14,4,0.25);
-      g.fillStyle=vol(x,y,12,C('#ececE8','#C08A5A')); g.beginPath(); g.ellipse(x,y,12,6.5,0,0,6.28); g.fill(); ink(2.5); g.stroke();
-      g.beginPath(); g.arc(x+11,y-4,5.5,0,6.28); g.fill(); g.stroke();
-      g.fillStyle=C('#111','#5A3A22'); g.beginPath(); g.ellipse(x+8,y-6,3,4.5,0.4,0,6.28); g.fill(); break;
+      shadow(x,y+7,13,3.5); blob(x,y,12,6.5,C('#fff','#C08A5A')); blob(x+11,y-4,5.5,5.5,C('#fff','#C08A5A'));
+      g.fillStyle=C(INK.ink,'#5A3A22'); g.beginPath(); g.ellipse(x+8,y-6,3,4.5,0.4,0,6.28); g.fill();
+      g.fillStyle=INK.ink; g.beginPath(); g.arc(x+13,y-5,1.4,0,6.28); g.fill(); break;
     case 'hyd':
-      shadow(x,y+5,10,4,0.25);
-      g.fillStyle=vol(x,y-6,8,C('#ececE8','#E0483A')); g.beginPath(); g.roundRect(x-6,y-16,12,20,3); g.fill(); ink(2.5); g.stroke();
-      g.beginPath(); g.arc(x,y-17,5,0,6.28); g.fill(); g.stroke();
-      g.fillStyle=C('#111','#8C2A22'); g.fillRect(x-9,y-8,4,4); g.fillRect(x+5,y-8,4,4); break;
+      shadow(x,y+5,9,3.5);
+      g.fillStyle=C('#fff','#E0483A'); g.beginPath(); g.roundRect(x-6,y-16,12,20,3); g.fill(); ink(INK.lineBg); g.stroke();
+      blob(x,y-17,5,5,C('#fff','#E0483A'));
+      g.fillStyle=C(INK.ink,'#8C2A22'); g.fillRect(x-9,y-8,4,4); g.fillRect(x+5,y-8,4,4); break;
     case 'omuk':{
-      shadow(x,y+8,24,6,0.28);
-      box(x-18,y-14,36,18,C('#fff','#F2E4C8'));                                  // 수레
-      g.fillStyle=C('#111','#8B5E3C'); g.fillRect(x-16,y-4,32,3);
-      g.fillStyle=vol(x-9,y+6,5,C('#ececE8','#3A3A38')); g.beginPath(); g.arc(x-9,y+6,5,0,6.28); g.fill(); ink(2); g.stroke();
-      g.fillStyle=vol(x+9,y+6,5,C('#ececE8','#3A3A38')); g.beginPath(); g.arc(x+9,y+6,5,0,6.28); g.fill(); g.stroke();
-      box(x-14,y-22,28,8,C('#111','#D8503A'));                                    // 차양
-      for(let i=0;i<3;i++){ ink(1.8); g.strokeStyle=C('#111','#8B5E3C'); g.beginPath(); g.moveTo(x-8+i*8,y-14); g.lineTo(x-8+i*8,y-30); g.stroke(); g.fillStyle=C('#fff','#F2C98A'); g.beginPath(); g.ellipse(x-8+i*8,y-30,3,6,0,0,6.28); g.fill(); ink(1.4); g.strokeStyle='#111'; g.stroke(); } // 꼬치
-      ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); const st=Math.sin(s.ph*2+t*2)*3; g.beginPath(); g.moveTo(x-2,y-34); g.quadraticCurveTo(x+4+st,y-42,x-1,y-50); g.moveTo(x+6,y-36); g.quadraticCurveTo(x+11-st,y-44,x+6,y-52); g.stroke(); break; } // 김
+      shadow(x,y+8,22,5);
+      box(x-18,y-14,36,18,C('#fff','#F2E4C8'));
+      g.fillStyle=C(INK.ink,'#8B5E3C'); g.fillRect(x-16,y-4,32,3);
+      blob(x-9,y+6,5,5,C(INK.grey,'#3A3A38')); blob(x+9,y+6,5,5,C(INK.grey,'#3A3A38'));
+      box(x-14,y-22,28,8,C(INK.ink,'#D8503A'));
+      for(let i=0;i<3;i++){ ink(INK.lineIn); g.strokeStyle=C(INK.ink,'#8B5E3C'); g.beginPath(); g.moveTo(x-8+i*8,y-14); g.lineTo(x-8+i*8,y-30); g.stroke(); g.fillStyle=C('#fff','#F2C98A'); g.beginPath(); g.ellipse(x-8+i*8,y-30,3,6,0,0,6.28); g.fill(); ink(1.4); g.strokeStyle=INK.ink; g.stroke(); }
+      ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); const st=Math.sin(s.ph*2+t*2)*3; g.beginPath(); g.moveTo(x-2,y-34); g.quadraticCurveTo(x+4+st,y-42,x-1,y-50); g.moveTo(x+6,y-36); g.quadraticCurveTo(x+11-st,y-44,x+6,y-52); g.stroke(); break; }
     case 'net':{
-      shadow(x,y+10,20,5,0.25);
-      ink(2.5); g.strokeStyle='#111'; g.beginPath(); g.moveTo(x-16,y+8); g.lineTo(x-16,y-30); g.moveTo(x+16,y+8); g.lineTo(x+16,y-30); g.moveTo(x-16,y-28); g.lineTo(x+16,y-28); g.stroke();
-      g.strokeStyle=C('#111','#5A7A6A'); g.lineWidth=1.2; for(let i=0;i<5;i++){ g.beginPath(); g.moveTo(x-14+i*7,y-27); g.lineTo(x-4+i*7,y+4); g.moveTo(x+14-i*7,y-27); g.lineTo(x+4-i*7,y+4); g.stroke(); }
-      g.fillStyle=C('#fff','#E9862A'); for(let i=0;i<3;i++){ g.beginPath(); g.arc(x-10+i*10,y-20,2.6,0,6.28); g.fill(); ink(1.2); g.strokeStyle='#111'; g.stroke(); } break; }
+      shadow(x,y+10,18,4.5);
+      ink(INK.lineBg); g.strokeStyle=INK.ink; g.beginPath(); g.moveTo(x-16,y+8); g.lineTo(x-16,y-30); g.moveTo(x+16,y+8); g.lineTo(x+16,y-30); g.moveTo(x-16,y-28); g.lineTo(x+16,y-28); g.stroke();
+      g.strokeStyle=C(INK.ink,'#5A7A6A'); g.lineWidth=1.2; for(let i=0;i<5;i++){ g.beginPath(); g.moveTo(x-14+i*7,y-27); g.lineTo(x-4+i*7,y+4); g.moveTo(x+14-i*7,y-27); g.lineTo(x+4-i*7,y+4); g.stroke(); }
+      g.fillStyle=C('#fff','#E9862A'); for(let i=0;i<3;i++){ g.beginPath(); g.arc(x-10+i*10,y-20,2.6,0,6.28); g.fill(); ink(1.2); g.strokeStyle=INK.ink; g.stroke(); } break; }
     case 'tetra':{
-      shadow(x,y+10,26,7,0.3);
-      const c=C('#ececE8','#9A9EA3');
-      for(const [ox,oy,r] of [[-10,2,9],[8,-2,10],[0,-12,8]]){ g.fillStyle=vol(x+ox,y+oy,r,c); g.beginPath(); g.moveTo(x+ox-r,y+oy+r*0.6); g.lineTo(x+ox,y+oy-r); g.lineTo(x+ox+r,y+oy+r*0.6); g.closePath(); g.fill(); ink(2.5); g.stroke(); } break; }
+      shadow(x,y+10,24,6);
+      const c=C('#fff','#9A9EA3');
+      for(const [ox,oy,r] of [[-10,2,9],[8,-2,10],[0,-12,8]]){ g.fillStyle=c; g.beginPath(); g.moveTo(x+ox-r,y+oy+r*0.6); g.lineTo(x+ox,y+oy-r); g.lineTo(x+ox+r,y+oy+r*0.6); g.closePath(); g.fill(); g.fillStyle=shadeOf(c); g.beginPath(); g.moveTo(x+ox,y+oy-r); g.lineTo(x+ox+r,y+oy+r*0.6); g.lineTo(x+ox,y+oy+r*0.6); g.closePath(); g.fill(); ink(INK.lineBg); g.beginPath(); g.moveTo(x+ox-r,y+oy+r*0.6); g.lineTo(x+ox,y+oy-r); g.lineTo(x+ox+r,y+oy+r*0.6); g.closePath(); g.stroke(); } break; }
     case 'seaweed':{
-      shadow(x,y+10,20,5,0.25);
-      ink(2.5); g.strokeStyle='#111'; g.beginPath(); g.moveTo(x-18,y+8); g.lineTo(x-18,y-26); g.moveTo(x+18,y+8); g.lineTo(x+18,y-26); g.moveTo(x-18,y-24); g.lineTo(x+18,y-24); g.stroke();
-      g.strokeStyle=C('#111','#2F4A3A'); g.lineWidth=3.2; for(let i=0;i<5;i++){ const xx=x-13+i*6.5, sw=Math.sin(s.ph+i+t*1.5)*2; g.beginPath(); g.moveTo(xx,y-24); g.quadraticCurveTo(xx+sw,y-10,xx-sw,y+2); g.stroke(); } break; }
+      shadow(x,y+10,18,4.5);
+      ink(INK.lineBg); g.strokeStyle=INK.ink; g.beginPath(); g.moveTo(x-18,y+8); g.lineTo(x-18,y-26); g.moveTo(x+18,y+8); g.lineTo(x+18,y-26); g.moveTo(x-18,y-24); g.lineTo(x+18,y-24); g.stroke();
+      g.strokeStyle=C(INK.ink,'#2F4A3A'); g.lineWidth=3.2; for(let i=0;i<5;i++){ const xx=x-13+i*6.5, sw=Math.sin(s.ph+i+t*1.5)*2; g.beginPath(); g.moveTo(xx,y-24); g.quadraticCurveTo(xx+sw,y-10,xx-sw,y+2); g.stroke(); } break; }
     case 'gukbap':{
-      shadow(x,y+6,20,5,0.25);
-      box(x-15,y-32,30,36,C('#fff','#EAD9B8'));
-      box(x-9,y-26,18,26,C('#111','#6B4A2B'));
+      shadow(x,y+6,18,4.5);
+      box(x-15,y-32,30,36,C('#fff','#EAD9B8')); box(x-9,y-26,18,26,C(INK.ink,'#6B4A2B'),INK.lineIn);
       g.fillStyle=C('#fff','#F2D66B'); g.fillRect(x-3,y-14,6,2);
-      toneClip(()=>{g.beginPath(); g.rect(x-15,y-32,30,36);},{x:x+6,y:y-32,w:9,h:36});
       ink(1.4); g.strokeStyle=C('#8a8a86','#B9B9B4'); const st=Math.sin(t*2+s.ph)*3; g.beginPath(); g.moveTo(x-4,y-36); g.quadraticCurveTo(x+2+st,y-44,x-3,y-52); g.moveTo(x+5,y-38); g.quadraticCurveTo(x+10-st,y-46,x+5,y-54); g.stroke();
-      g.fillStyle=C('#111','#D8503A'); g.fillRect(x-15,y-39,30,6); g.fillStyle='#fff'; g.fillRect(x-10,y-37,8,2); g.fillRect(x,y-37,10,2); break; }
+      g.fillStyle=C(INK.ink,'#D8503A'); g.fillRect(x-15,y-39,30,6); g.fillStyle='#fff'; g.fillRect(x-10,y-37,8,2); g.fillRect(x,y-37,10,2); break; }
     case 'hanji':{
-      shadow(x,y+8,18,5,0.25);
-      ink(2.5); g.strokeStyle='#111'; g.beginPath(); g.moveTo(x-14,y+6); g.lineTo(x-14,y-28); g.moveTo(x+14,y+6); g.lineTo(x+14,y-28); g.moveTo(x-14,y-26); g.lineTo(x+14,y-26); g.stroke();
-      for(let i=0;i<3;i++){ const xx=x-11+i*8; g.fillStyle=C('#fff',['#F7F0E1','#F1E4C6','#EFE7D8'][i]); g.fillRect(xx,y-25,7,26); ink(1.4); g.strokeRect(xx,y-25,7,26); } break; }
+      shadow(x,y+8,16,4.5);
+      ink(INK.lineBg); g.strokeStyle=INK.ink; g.beginPath(); g.moveTo(x-14,y+6); g.lineTo(x-14,y-28); g.moveTo(x+14,y+6); g.lineTo(x+14,y-28); g.moveTo(x-14,y-26); g.lineTo(x+14,y-26); g.stroke();
+      for(let i=0;i<3;i++){ const xx=x-11+i*8; box(xx,y-25,7,26,C('#fff',['#F7F0E1','#F1E4C6','#EFE7D8'][i]),INK.lineIn); } break; }
     case 'well':{
-      shadow(x,y+8,20,6,0.28);
-      g.fillStyle=vol(x,y,14,C('#ececE8','#9A9EA3')); g.beginPath(); g.ellipse(x,y,14,7,0,0,6.28); g.fill(); ink(2.5); g.stroke();
-      g.fillStyle=C('#d9d9d4','#5C7C93'); g.beginPath(); g.ellipse(x,y-1,9,4,0,0,6.28); g.fill(); ink(1.8); g.stroke();
-      ink(2.5); g.strokeStyle='#111'; g.beginPath(); g.moveTo(x-12,y-2); g.lineTo(x-12,y-26); g.moveTo(x+12,y-2); g.lineTo(x+12,y-26); g.moveTo(x-14,y-26); g.lineTo(x+14,y-26); g.stroke();
-      g.fillStyle=C('#111','#8B5E3C'); g.beginPath(); g.moveTo(x-16,y-26); g.lineTo(x,y-34); g.lineTo(x+16,y-26); g.closePath(); g.fill(); ink(2); g.stroke(); break; }
+      shadow(x,y+8,18,5);
+      blob(x,y,14,7,C('#fff','#9A9EA3'));
+      g.fillStyle=C(INK.grey,'#5C7C93'); g.beginPath(); g.ellipse(x,y-1,9,4,0,0,6.28); g.fill(); ink(INK.lineIn); g.stroke();
+      ink(INK.lineBg); g.strokeStyle=INK.ink; g.beginPath(); g.moveTo(x-12,y-2); g.lineTo(x-12,y-26); g.moveTo(x+12,y-2); g.lineTo(x+12,y-26); g.moveTo(x-14,y-26); g.lineTo(x+14,y-26); g.stroke();
+      g.fillStyle=C(INK.ink,'#8B5E3C'); g.beginPath(); g.moveTo(x-16,y-26); g.lineTo(x,y-34); g.lineTo(x+16,y-26); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke(); break; }
     case 'chocopie':{
-      shadow(x,y+6,22,5,0.25);
-      box(x-16,y-32,32,36,C('#fff','#FFF4DC'));
-      box(x-16,y-40,32,8,C('#111','#7A4E2D'));
-      box(x-6,y-24,12,24,C('#111','#5A3A22'));
+      shadow(x,y+6,20,4.5);
+      box(x-16,y-32,32,36,C('#fff','#FFF4DC')); box(x-16,y-40,32,8,C(INK.ink,'#7A4E2D')); box(x-6,y-24,12,24,C(INK.ink,'#5A3A22'),INK.lineIn);
       g.fillStyle=C('#fff','#F2D66B'); g.fillRect(x-1,y-14,3,2);
-      toneClip(()=>{g.beginPath(); g.rect(x-16,y-32,32,36);},{x:x+6,y:y-32,w:10,h:36});
-      // 줄 선 사람들
-      for(let i=0;i<3;i++){ const px2=x+22+i*11, sway=Math.sin(t*1.3+i)*1; g.fillStyle=C('#2e2e2c',['#3F5A8A','#7A4E2D','#4E6B4A'][i]); g.beginPath(); g.ellipse(px2+sway,y-6,4,10,0,0,6.28); g.fill(); ink(1.8); g.stroke(); g.fillStyle=C('#ececE8','#F2CDA8'); g.beginPath(); g.arc(px2+sway,y-20,4,0,6.28); g.fill(); g.stroke(); } break; }
+      for(let i=0;i<3;i++){ const px2=x+22+i*11, sway=Math.sin(t*1.3+i)*1; blob(px2+sway,y-6,4,9,C('#fff',['#3F5A8A','#7A4E2D','#4E6B4A'][i]),INK.lineIn); blob(px2+sway,y-21,5.5,5.5,C('#fff','#F2CDA8'),INK.lineIn); g.fillStyle=INK.ink; g.beginPath(); g.arc(px2+sway+1.5,y-21,1.2,0,6.28); g.fill(); } break; }
     default:
-      shadow(x,y+5,10,4,0.25); g.fillStyle=vol(x,y,k.r,C('#ececE8','#B9B9B4')); g.beginPath(); g.arc(x,y,k.r,0,6.28); g.fill(); ink(2.5); g.stroke();
+      shadow(x,y+5,9,3.5); blob(x,y,k.r,k.r,C('#fff','#B9B9B4'));
   }
 }
 
 function draw(){
+  if(W<2||H<2||off.width<2) return;            // 아직 레이아웃이 없으면 그리지 않는다
   scene(ctx,false);
-  if(rapShown>0.02){
+  const r=Math.max(rapShown, bloom*0.28);
+  if(r>0.02){
     scene(octx,true);
     const dx=sx(D.x), dy=sy(D.y);
-    const R=Math.max(W,H)*(0.08+1.25*rapShown*rapShown);
+    const R=Math.max(W,H)*(0.08+1.25*r*r)+bloom*40;
     mctx.setTransform(1,0,0,1,0,0); mctx.clearRect(0,0,msk.width,msk.height); mctx.setTransform(DPR,0,0,DPR,0,0);
     mctx.globalCompositeOperation='source-over'; mctx.drawImage(off,0,0,off.width,off.height,0,0,W,H);
     mctx.globalCompositeOperation='destination-in';
@@ -738,8 +768,6 @@ function loop(now){
 document.getElementById('again').onclick=()=>{ reset(); pickDog(dog.id); };
 window.addEventListener('gamepadconnected',()=>{ say('컨트롤러가 연결됐다. 트리거로 줄을 쥐세요.'); });
 window.addEventListener('beforeunload',()=>{ if(dog) saveRap(dog.id,rapport); });
-
-// 시작 동네: ?city= → 저장된 것 → 첫 번째
 (function(){
   let id=new URL(location.href).searchParams.get('city');
   if(!id){ try{ id=localStorage.getItem('drawn.city'); }catch(e){} }
@@ -747,6 +775,13 @@ window.addEventListener('beforeunload',()=>{ if(dog) saveRap(dog.id,rapport); })
 })();
 renderCities(); reset(); resize(); pickDog(0);
 requestAnimationFrame(loop);
+
+// 개발용: 시뮬레이션을 정해진 시간만큼 돌린다. 자가 플레이 밸런싱과 테스트에 쓴다.
+window.__drawn={
+  advance(seconds,inp){ const s=Object.assign({mx:0,my:0,g:0.45,drop:false},inp||{}); const n=Math.round(seconds*60); for(let i=0;i<n&&running;i++) step(1/60,s); draw(); return this.state(); },
+  state(){ return {t:+t.toFixed(2),rapport:+rapport.toFixed(3),tension:+tension.toFixed(3),mood:+mood.toFixed(3),intro:intro.stage,held,sniff:sniffCount,events:events.slice(),city:city.id,dog:dog.name,P:{x:+P.x.toFixed(1),y:+P.y.toFixed(1)},D:{x:+D.x.toFixed(1),y:+D.y.toFixed(1)}}; },
+  city:pickCity, dog:pickDog, reset
+};
 })();
 </script>
 </body>
