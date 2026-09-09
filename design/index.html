@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>끌림 기획서</title>
+<meta name="description" content="《끌림 / Drawn》 게임 기획서 v0.1 — 합과 색 회복, 개 6종, 미션, 날씨, 5주 스토리, 엔드게임, 이름.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23111'/><text x='50%' y='58%' font-size='34' text-anchor='middle' dominant-baseline='middle'>🐾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root{--paper:#FAFAF7;--paper2:#F1F1EC;--ink:#111;--g1:#3A3A38;--g2:#7C7C78;--g3:#C9C9C4;--line:#DADAD5}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper2);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo",sans-serif;font-size:15px;line-height:1.7}
+  .doc{max-width:860px;margin:0 auto;padding:22px 24px 80px}
+  nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  nav a{color:var(--g1);text-decoration:none;border:2px solid transparent;border-radius:14px;padding:5px 10px}
+  nav a:hover{border-color:var(--ink)}
+  nav .logo{font-family:"Gaegu",cursive;font-weight:700;font-size:28px;text-transform:none;letter-spacing:0;color:var(--ink)}
+  .cover{border:3px solid var(--ink);border-radius:10px;background:var(--paper);box-shadow:8px 8px 0 #111;padding:34px 36px;margin-bottom:34px;position:relative;overflow:hidden}
+  .cover .kicker{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--g2)}
+  .cover h1{font-family:"Gaegu",cursive;font-weight:700;font-size:78px;line-height:.95;margin:6px 0 4px}
+  .cover .en{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--g1)}
+  .cover p.one{font-size:19px;margin:18px 0 0;max-width:34ch;border-left:4px solid var(--ink);padding-left:14px}
+  .strip{display:flex;height:28px;border:2.5px solid var(--ink);border-radius:6px;overflow:hidden;margin-top:26px}
+  .strip i{flex:1}
+  .lab{display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;color:var(--g2);margin-top:6px;text-transform:uppercase}
+  h2{font-family:"Gaegu",cursive;font-weight:700;font-size:38px;margin:40px 0 10px;line-height:1;border-bottom:3px solid var(--ink);padding-bottom:6px}
+  p{margin:0 0 12px;max-width:66ch}
+  .rule{font-family:"Gaegu",cursive;font-weight:700;font-size:23px;line-height:1.35;background:var(--paper);border:2.5px solid var(--ink);border-radius:8px;padding:12px 18px;box-shadow:4px 4px 0 #111;margin:14px 0 18px;max-width:60ch}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0 6px}
+  .card{background:var(--paper);border:2.5px solid var(--ink);border-radius:8px;padding:12px 14px;box-shadow:4px 4px 0 #111}
+  .card b{font-family:"Gaegu",cursive;font-weight:700;font-size:22px;display:block;line-height:1.1;margin-bottom:4px}
+  .card span{color:var(--g1);font-size:14px}
+  .card .ax{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--g2);letter-spacing:.06em;display:block;margin-top:6px}
+  table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1.5px solid var(--line);vertical-align:top}
+  th{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2);border-bottom:2.5px solid var(--ink)}
+  .tw{overflow-x:auto}
+  ul{padding-left:20px;margin:0 0 12px} li{margin-bottom:4px}
+  .names{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+  .name{background:var(--paper);border:2.5px solid var(--ink);border-radius:8px;padding:14px;box-shadow:4px 4px 0 #111}
+  .name.pick{background:var(--ink);color:#fff;box-shadow:4px 4px 0 #888}
+  .name.pick .en,.name.pick span{color:#ccc}
+  .name b{font-family:"Gaegu",cursive;font-weight:700;font-size:34px;display:block;line-height:1}
+  .name .en{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);display:block;margin:2px 0 8px}
+  .name span{font-size:13.5px;color:var(--g1)}
+  .stamp{position:absolute;right:26px;top:26px;font-family:"Gaegu",cursive;font-weight:700;font-size:16px;border:2.5px solid var(--ink);border-radius:50%;width:88px;height:88px;display:flex;align-items:center;justify-content:center;transform:rotate(-12deg);text-align:center;line-height:1.1}
+  .dim{color:var(--g2)}
+  code{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:#fff;border:1px solid var(--line);padding:0 5px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="doc">
+  <nav><a class="logo" href="../">끌림</a><span><a href="../">소개</a><a href="../play/">놀아보기</a></span></nav>
+
+  <div class="cover">
+    <div class="stamp">기획<br>v0.1</div>
+    <div class="kicker">Game Design · 2026-09-09 · Mac 우선 · 싱글 · ADA 2027</div>
+    <h1>끌림</h1>
+    <div class="en">Drawn</div>
+    <p class="one">남의 개를 산책시킨다. 개는 제 맘대로 가고, 줄만이 둘을 잇는다. 합이 맞을수록 흑백 세상에 색이 돌아온다.</p>
+    <div class="strip">
+      <i style="background:#fff"></i><i style="background:#e6e6e2"></i><i style="background:#c9c9c4"></i><i style="background:#a0a09b"></i>
+      <i style="background:#9a9c8a"></i><i style="background:#a8b07a"></i><i style="background:#c9b56a"></i><i style="background:#e0a34a"></i><i style="background:#e8562d"></i>
+    </div>
+    <div class="lab"><span>합 0 — 잉크와 종이</span><span>합 100 — 색이 돌아온 골목</span></div>
+  </div>
+
+  <h2>한 문장</h2>
+  <div class="rule">스틱은 나를 움직이고, 개는 자기 뜻으로 움직이고, 트리거가 줄을 쥐는 힘이다.</div>
+  <p>플레이어는 개를 조종하지 않습니다. 통제할 수 없는 것을 끌고, 끌리고, 결국 발을 맞추는 법을 손가락이 배웁니다. 세 줄 규칙 — <b>개는 제 맘대로 간다 · 세게 쥐면 멈추지만 싫어한다 · 놓으면 달아난다</b> — 위에서 개마다 다른 손맛이 나옵니다.</p>
+
+  <h2>핵심 시스템 — 합(合)과 색</h2>
+  <p>세상은 잉크 카툰, 흑백입니다. 이건 스타일이 아니라 <b>상태</b>입니다. 개와 합이 맞아갈수록 색이 돌아옵니다.</p>
+  <div class="tw"><table>
+    <tr><th>합</th><th>화면</th><th>손</th></tr>
+    <tr><td>0–20</td><td>완전한 흑백. 종이와 잉크.</td><td>줄이 자주 팽팽하다. 진동이 거칠다.</td></tr>
+    <tr><td>20–45</td><td>개의 목줄과 지금 냄새 맡는 물건에만 색이 든다.</td><td>당기는 순간이 줄어든다.</td></tr>
+    <tr><td>45–75</td><td>개 주변으로 색이 번진다. 잔디·가로수·빵집.</td><td>개가 나를 돌아본다. 걸음이 맞는다.</td></tr>
+    <tr><td>75–100</td><td>골목 전체, 하늘까지. 잉크선은 남고 색이 찬다.</td><td>줄이 느슨한 채로 같이 걷는다. 진동이 거의 없다.</td></tr>
+  </table></div>
+  <p><b>합이 오르는 것:</b> 냄새 맡게 두기 · 멈추면 기다리기 · 걸음 맞추기 · 확 당기지 않기 · 무서워할 때 곁에 서기.<br><b>합이 떨어지는 것:</b> 확 당김 · 끌고 가기 · 하고 싶은 걸 2초 이상 막기 · 놓쳤다가 잡기.</p>
+  <p>산책이 끝나면 <b>그날 색이 돌아온 만큼의 골목 그림</b>이 남습니다. 이게 결산이고 공유 이미지입니다. 점수판이 아닙니다.</p>
+  <p class="dim">기술: 컬러 레이어와 잉크 레이어를 개를 중심으로 한 반경 마스크로 섞는다. Mac은 Metal 프래그먼트 셰이더, 프로토타입은 Canvas 합성.</p>
+
+  <h2>개들 — 성격이 손맛이다</h2>
+  <p>다섯 축으로 만듭니다. <code>호기심 · 겁 · 힘 · 나이 · 사교성</code>. 축의 조합이 줄의 물리(질량·반응 속도·멈춤 빈도·튐 확률)로 번역됩니다. 시너지 없음, 상성만. 메카벨룸의 원칙입니다.</p>
+  <div class="grid">
+    <div class="card"><b>콩이 · 강아지</b><span>뭐든 궁금하다. 고양이에 튄다. 가볍다.</span><i class="ax">호기심 高 · 힘 低 · 사교 高</i></div>
+    <div class="card"><b>복동 · 노견</b><span>열세 살. 자꾸 멈춘다. 기다려야 한다.</span><i class="ax">나이 高 · 호기심 中 · 힘 中</i></div>
+    <div class="card"><b>두식 · 대형견</b><span>세게 잡을수록 더 당긴다. 사람이 끌려간다.</span><i class="ax">힘 高 · 겁 低</i></div>
+    <div class="card"><b>나리 · 겁쟁이</b><span>버스 소리에 얼어붙는다. 곁에 서 줘야 움직인다.</span><i class="ax">겁 高 · 사교 低</i></div>
+    <div class="card"><b>봉구 · 사교왕</b><span>모든 개와 사람에게 간다. 줄이 사방으로.</span><i class="ax">사교 高 · 호기심 高</i></div>
+    <div class="card"><b>먹구 · 유기견 출신</b><span>처음엔 합이 안 오른다. 시간이 걸린다. 오르면 가장 깊다.</span><i class="ax">겁 高 · 신뢰 느림</i></div>
+  </div>
+  <p>주인 메모는 온디바이스 모델이 개의 축과 주인의 사정에서 생성합니다. <i>"지난봄부터 버스를 무서워해요."</i> 합은 <b>개마다 산책을 넘어 누적</b>됩니다. 개가 당신을 기억합니다.</p>
+
+  <h2>미션 — 산책 도중의 작은 일</h2>
+  <p>미션은 산책을 끊지 않습니다. 골목에 자연스럽게 놓여 있고, <b>성패는 개의 협조</b>에 달려 있습니다.</p>
+  <div class="tw"><table>
+    <tr><th>미션</th><th>무엇을 하나</th><th>개가 개입하는 방식</th></tr>
+    <tr><td>약 받아오기</td><td>약국 앞에서 잠깐 멈춘다</td><td>개가 기다려 주는가. 노견은 잘 기다리고 강아지는 못 기다린다</td></tr>
+    <tr><td>편지 넣기</td><td>우편함까지 간다</td><td>가는 길에 빵집이 있다</td></tr>
+    <tr><td>길 건너기</td><td>신호를 기다렸다 건넌다</td><td>겁쟁이는 버스에 얼어붙고, 사교왕은 건너편 개에게 간다</td></tr>
+    <tr><td>잃어버린 것 찾기</td><td>주인이 떨어뜨린 열쇠</td><td>개 코가 찾는다. 냄새 맡게 두어야 한다</td></tr>
+    <tr><td>아이 지나가기</td><td>유모차가 온다</td><td>줄을 짧게 쥐되 확 당기지 않기 — 가장 어려운 손</td></tr>
+    <tr><td>다른 산책러</td><td>이웃과 마주친다</td><td>두 개의 합 — 봉구는 좋아하고 먹구는 도망간다</td></tr>
+  </table></div>
+
+  <h2>변수 — 날씨와 시간</h2>
+  <ul>
+    <li><b>비</b> — 우산을 든다. <b>한 손이 줄, 한 손이 우산</b>. 우산 각도가 두 번째 스틱이 되고, 기울이면 개가 젖거나 내가 젖는다. 개마다 비 반응이 다르다(콩이는 웅덩이로, 나리는 처마 밑으로).</li>
+    <li><b>바람</b> — 냄새가 멀리서 온다. 개가 갑자기 방향을 튼다.</li>
+    <li><b>밤</b> — 색이 돌아와도 어둡다. 가로등 아래에서만 색이 보인다. 고양이가 많다.</li>
+    <li><b>눈</b> — 발자국이 남는다. 산책 끝 그림에 두 줄의 발자국.</li>
+    <li><b>공사·축제·장날</b> — 소음과 사람. 겁 많은 개의 날.</li>
+  </ul>
+
+  <h2>스토리 — 5주</h2>
+  <p>당신은 동네에 새로 온 산책 알바입니다. 개 주인은 이웃들이고, 저마다 사정이 있어 직접 못 나옵니다. 야간 근무 간호사, 입원한 노인, 이사 준비 중인 가족, 산후조리 중인 부부.</p>
+  <div class="tw"><table>
+    <tr><th>주</th><th>제목</th><th>무슨 일</th></tr>
+    <tr><td>1</td><td>남의 개</td><td>콩이와 복동. 줄을 배운다. 동네는 흑백이다.</td></tr>
+    <tr><td>2</td><td>버스가 무서운 개</td><td>나리. 처음으로 합이 안 오른다. 기다리는 법.</td></tr>
+    <tr><td>3</td><td>비 오는 주</td><td>우산. 한 손. 두식이 끄는 대로 빗속을 간다.</td></tr>
+    <tr><td>4</td><td>먹구</td><td>유기견 출신. 3일 동안 색이 하나도 안 돌아온다. 4일째 목줄에 색이 든다.</td></tr>
+    <tr><td>5</td><td>복동의 마지막 골목</td><td>노견의 산책이 매일 짧아진다. 마지막 날, 주인이 함께 나온다. 셋이 걷는다.</td></tr>
+  </table></div>
+  <p><b>엔딩.</b> 5주가 끝나면 동네 지도 전체가 색으로 차 있습니다. 당신이 걸은 만큼. 그리고 유기견 보호소에서 전화가 옵니다. 먹구를 데려가겠느냐고. <b>이 게임의 마지막 선택은 남의 개가 아니라 내 개를 갖는 것</b>입니다.</p>
+  <p class="dim">복동의 주는 죽음을 보여주지 않고, 산책이 짧아지는 것으로만 말합니다.</p>
+
+  <h2>거기서부터 — 엔드게임</h2>
+  <ul>
+    <li><b>오늘의 산책</b> — 전원 같은 개·같은 골목 시드. 색이 얼마나 돌아왔는지로 비교.</li>
+    <li><b>동네 지도</b> — 산책마다 색이 돌아온 구역이 누적. 지도를 전부 채우는 것이 장기 목표.</li>
+    <li><b>개 도감</b> — 성격 축의 조합. 새 개는 계절마다 이웃이 이사 오며 생긴다.</li>
+    <li><b>비동기</b> — 다른 사람이 같은 개와 걸은 색 지도를 나란히 본다. 승패 없음. "이 사람은 빵집을 갔구나."</li>
+    <li><b>산책 일기</b> — 산책이 끝날 때 온디바이스 모델이 실제 이벤트 로그에서 세 줄을 쓴다. 매일 다르다.</li>
+  </ul>
+
+  <h2>왜 Apple인가</h2>
+  <ul>
+    <li><b>DualSense 적응형 트리거</b> — GameController 프레임워크가 네이티브 지원. 줄의 팽팽함이 트리거 저항으로 손가락에 온다.</li>
+    <li><b>iPhone 가상 스틱 + Core Haptics</b> — 같은 게임, 다른 손. 당김을 햅틱으로.</li>
+    <li><b>온디바이스 Foundation Models</b> — 주인 메모·골목 이벤트·산책 일기. 서버 0.</li>
+    <li><b>Metal</b> — 잉크/컬러 레이어 합성과 스크린톤을 프래그먼트 셰이더로.</li>
+    <li><b>Game Center Challenge</b> — 오늘의 산책 비동기 비교.</li>
+  </ul>
+  <p><b>ADA 부문:</b> Interaction(줄로 이어진 두 몸의 제어) · Visuals and Graphics(색이 돌아오는 잉크 카툰) · Delight and Fun.</p>
+
+  <h2>제작</h2>
+  <ul>
+    <li><b>SpriteKit</b> 2D. 줄은 스프링 조인트. 개 AI는 욕구 기반(냄새·쉼·쫓기·인사).</li>
+    <li><b>어셋</b> — 스프라이트 생성 도구로 개 걷기·냄새·앉기 사이클. 잉크 규칙(굵은 외곽선·회색 그라데이션·바닥 그림자·스크린톤)을 고정. 컬러 버전과 흑백 버전 두 벌.</li>
+    <li><b>순서</b> — ① 줄 손맛(완료) → ② 합과 색 회복(완료, 웹) → ③ 개 6종 → ④ 미션 6종 → ⑤ 비 → ⑥ 5주 스토리 → ⑦ 산책 일기.</li>
+  </ul>
+
+  <h2>이름</h2>
+  <div class="names">
+    <div class="name pick"><b>끌림</b><span class="en">Drawn</span><span>줄에 끌리고, 개에게 끌린다. 영어 Drawn은 세 겹 — 당겨진, 이끌린, 그리고 <b>그려진</b>. 잉크 카툰 게임에 이보다 맞는 단어가 없다.</span></div>
+    <div class="name"><b>물들다</b><span class="en">Tinge</span><span>세상에 색이 물들고, 서로에게 물든다. 색 회복 메커닉을 이름으로.</span></div>
+    <div class="name"><b>남의 개</b><span class="en">Someone Else's Dog</span><span>정직하고 웃기고 기억에 남는다. 정서는 덜 깊다.</span></div>
+    <div class="name"><b>발맞춤</b><span class="en">In Step</span><span>합(合)을 우리말로. 걸음이 맞는 순간.</span></div>
+  </div>
+  <p style="margin-top:16px"><b>《끌림 / Drawn》로 확정.</b> 한 단어에 게임의 물리와 감정이 다 들어 있고, 영어 제목이 아트 스타일까지 설명합니다.</p>
+</div>
+</body>
+</html>
