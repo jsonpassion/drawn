@@ -8,7 +8,7 @@
 <meta property="og:title" content="끌림 — Drawn">
 <meta property="og:description" content="남의 개를 산책시킨다. 합이 맞을수록 흑백 골목에 색이 돌아온다.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23111'/><text x='50%' y='58%' font-size='34' text-anchor='middle' dominant-baseline='middle'>🐾</text></svg>">
+<link rel="icon" href="img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
@@ -27,6 +27,8 @@
 
   .hero{display:grid;grid-template-columns:1.05fr 1fr;gap:26px;align-items:center}
   @media (max-width:820px){.hero{grid-template-columns:1fr}}
+  .cast{display:flex;gap:6px;align-items:flex-end;margin-top:18px}
+  .cast img{height:150px;width:auto}
   .hero .kicker{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--g2)}
   .hero h1{font-family:"Gaegu",cursive;font-weight:700;font-size:clamp(72px,12vw,120px);line-height:.9;margin:6px 0 2px}
   .hero .en{font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.32em;text-transform:uppercase;color:var(--g1)}
@@ -91,6 +93,7 @@
         <a class="btn ghost" href="design/">기획서 읽기</a>
       </div>
       <p class="dim" style="margin-top:14px">브라우저 프로토타입. 컨트롤러를 꽂으면 진동이 옵니다.</p>
+      <div class="cast"><img src="img/bori.png" alt="보리 — 크림색 강아지, 검은 귀 하나, 붉은 하네스"><img src="img/jiwoo.png" alt="지우 — 단발머리, 파란 코트, 하네스 손잡이"></div>
     </div>
 
     <div class="scene">
