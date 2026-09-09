@@ -491,6 +491,8 @@ function finish(){
   else lines.push('연석 앞에서 한 번도 멈추지 않았다. '+HANDLER.name+'의 발은 연석을 찾지 못했다.');
   if(stats.danger) lines.push('차 앞으로 '+stats.danger+'번 들어갔다. '+HANDLER.name+'는 그걸 몰랐다.');
   if(stats.sniff) lines.push('냄새를 '+stats.sniff+'번 맡았다. '+HANDLER.name+'가 기다렸다.');
+  // 같은 줄 반복 제거
+  for(let i=lines.length-1;i>0;i--){ if(lines[i]===lines[i-1]) lines.splice(i,1); }
   lines.push(mood>0.7?'집에 돌아올 때 꼬리가 올라가 있었다.':mood>0.4?'집에 돌아올 때 그냥 걸었다.':'집에 돌아올 때 꼬리가 내려가 있었다.');
   endLines.innerHTML=lines.map(s=>'<div>'+s+'</div>').join('')+(facts.length?'<div style="border-left-color:#E8562D"><b>'+HANDLER.name+'의 일기</b><br>'+facts.slice(0,3).map(f=>'· '+f).join('<br>')+'</div>':'');
   endEl.classList.add('show');
