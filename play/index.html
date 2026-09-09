@@ -399,7 +399,7 @@ function step(dt,inp){
       const dx=target.x-D.x, dy=target.y-D.y, dist=Math.hypot(dx,dy)||1;
       const pull=target.k.pull[dog.id]*dog.curious*(1-focus)*55;
       wx+=dx/dist*pull; wy+=dy/dist*pull;
-      if(dist<target.k.r+dog.size+10 && (Math.hypot(inp.mx,inp.my)<0.2||pull>90)){
+      if(dist<target.k.r+dog.size+10 && (Math.hypot(inp.mx,inp.my)<0.2||pull>125)){
         if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.5); if(intro>=2) learn('일하는 안내견은 낯선 사람이 부르거나 먹을 걸 줘도 반응하지 않도록 배운다.'); face('sniff',1.2); say(target.k.name+'… 아니 일하는 중… '+target.k.name+'…',0,'너 지금 냄새 맡았지. 손잡이가 말해 줘.'); }
         else { target.used=true; target=null; }
       }
