@@ -152,7 +152,7 @@
 "use strict";
 /* ── 잉크 규칙. 앱의 Ink.swift와 같은 숫자다. ─────────────────── */
 const INK={paper:'#FAFAF7',grey:'#C9C9C4',ink:'#111111',leash:'#E8562D',
-           lineChar:3,lineBg:2,lineIn:1.5,headRatio:1.0,eye:0.12,toneGap:6,toneR:1.15};
+           lineChar:4.5,lineBg:2,lineIn:1.5,headRatio:1.0,eye:0.12,toneGap:6,toneR:1.15};
 
 const cv=document.getElementById('c'), ctx=cv.getContext('2d');
 const off=document.createElement('canvas'), octx=off.getContext('2d');
@@ -235,7 +235,7 @@ const WALK=90, HREST=80, HMAX=105, DOGSP=145, HANDSP=160, COURSE=14400;
 let P,PV,D,DV,heading,focus,holding;
 let spots=[], hazards=[], crossings=[], cars=[];
 let mood, tension, t, running, events, camX, handlerStun, fastFor, gust=0, gustT=0, hitFlash=0;
-let sniffTimer, target, trust=0, trustShown=0, bloom=0, intro=0, earUp=0;
+let sniffTimer, target, trust=0, trustShown=0, bloom=0, intro=0, earUp=0, expr='work', exprUntil=0;
 let stats, facts;
 let W=0,H=0,DPR=1, lastRumble=0;
 
@@ -275,6 +275,7 @@ function log(text,cls){
 let noteTimer=0;
 function say(s,ms,who){ noteEl.textContent=s; if(who){ const sm=document.createElement('small'); sm.textContent=HANDLER.name+': '+who; noteEl.appendChild(sm); } noteEl.style.opacity=1; noteTimer=(ms||(who?4600:2800))/1000; }
 function learn(f){ if(!facts.includes(f)) facts.push(f); }
+function face(e,secs){ expr=e; exprUntil=t+(secs||2.2); }
 
 /* ── 입력 ─── 스틱=개, 트리거=집중, B/스페이스=멈춤 */
 const keys={};
@@ -391,7 +392,7 @@ function step(dt,inp){
   if(holding){ wx=0; wy=0; }
   if(sniffTimer>0){
     sniffTimer-=dt; wx=0; wy=0; mood=Math.min(1,mood+dt*0.08); dT-=0.025*dt;
-    if(sniffTimer<=0&&target){ target.used=true; stats.sniff++; log(target.k.line); events.push(target.k.line); target=null; }
+    if(sniffTimer<=0&&target){ target.used=true; stats.sniff++; face('sulk',2); log(target.k.line); events.push(target.k.line); target=null; }
   } else {
     if(!target||target.used) target=nearestTemptation();
     if(target&&!holding){
@@ -399,7 +400,7 @@ function step(dt,inp){
       const pull=target.k.pull[dog.id]*dog.curious*(1-focus)*55;
       wx+=dx/dist*pull; wy+=dy/dist*pull;
       if(dist<target.k.r+dog.size+10 && (Math.hypot(inp.mx,inp.my)<0.2||pull>90)){
-        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.5); if(intro>=2) learn('일하는 안내견은 낯선 사람이 부르거나 먹을 걸 줘도 반응하지 않도록 배운다.'); say(target.k.name+'… 아니 일하는 중… '+target.k.name+'…',0,'너 지금 냄새 맡았지. 손잡이가 말해 줘.'); }
+        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.5); if(intro>=2) learn('일하는 안내견은 낯선 사람이 부르거나 먹을 걸 줘도 반응하지 않도록 배운다.'); face('sniff',1.2); say(target.k.name+'… 아니 일하는 중… '+target.k.name+'…',0,'너 지금 냄새 맡았지. 손잡이가 말해 줘.'); }
         else { target.used=true; target=null; }
       }
     }
@@ -425,7 +426,7 @@ function step(dt,inp){
       dT-=h.overhead?0.06:0.09; mood=Math.max(0,mood-0.05);
       const first=intro<1; if(first) intro=1;
       rumble(0.9,0.6,160); log(HANDLER.name+'가 '+HAZ[h.k].name+'에 부딪혔다.','warn'); events.push(HAZ[h.k].name+'에 부딪혔다.');
-      learn(HAZ[h.k].fact); say(first?'지우 부딪혔다. …지우는 못 본다. 내가 봐야 한다.':HAZ[h.k].name+'. 지우 부딪혔다. 내 탓이다.',0,'아야. 괜찮아, 다시 가자.');
+      learn(HAZ[h.k].fact); face('shock',1.6); say(first?'지우 부딪혔다. …지우는 못 본다. 내가 봐야 한다.':HAZ[h.k].name+'. 지우 부딪혔다. 내 탓이다.',0,'아야. 괜찮아, 다시 가자.');
     } else if(!h.hit && !h.passed && P.x>h.x+h.r+30){
       h.passed=true; stats.passed++; dT+=0.02; if(intro<1){ intro=1; say(HAZ[h.k].name+' 피했다. 나 좀 잘하는 듯.'); }
     }
@@ -450,20 +451,20 @@ function step(dt,inp){
     const atCurb=D.x>c.x0-75&&D.x<c.x0+5, onRoad=D.x>c.x0+5&&D.x<c.x1;
     if(c.phase==='approach'){
       if(atCurb&&(dsp<8||holding)) c.still+=dt; else c.still=0;
-      if(c.still>0.6){ c.phase='stopped'; c.since=0; const first=intro<2; if(first){ intro=2; bloom=0.6; } dT+=0.05; stats.curb++; rumble(0.4,0.3,100); log('연석 앞에서 멈췄다.','nice'); if(first) learn('점자블록이 없는 횡단보도에선 개의 멈춤이 유일한 신호다. 점자블록 적정 설치율 4%.'); say('연석. 멈춘다. 발이 근질근질해도 멈춘다.',0,'잘했어. 여기 턱이구나.'); }
+      if(c.still>0.6){ c.phase='stopped'; c.since=0; const first=intro<2; if(first){ intro=2; bloom=0.6; } dT+=0.05; stats.curb++; rumble(0.4,0.3,100); log('연석 앞에서 멈췄다.','nice'); if(first) learn('점자블록이 없는 횡단보도에선 개의 멈춤이 유일한 신호다. 점자블록 적정 설치율 4%.'); face('proud',1.8); say('연석. 멈춘다. 발이 근질근질해도 멈춘다.',0,'잘했어. 여기 턱이구나.'); }
       else if(onRoad){ c.phase='commanded'; dT-=0.1; log('멈추지 않고 차도에 들어갔다.','warn'); learn(HANDLER.name+'는 연석을 발로 찾는다. 개가 멈추지 않으면 차도인 줄 모른다.'); say('앗. 멈추는 걸 잊었다. 지우는 여기가 차도인 줄 모른다.'); }
     } else if(c.phase==='stopped'){
       c.since+=dt; if(c.since>1.4){ c.phase='commanded'; say('앞으로란다. 근데 내 귀가 먼저다.',3600,'앞으로.'); }
     } else if(c.phase==='commanded'){
       if(onRoad||D.x>=c.x1) c.phase='crossing';
-      else if(danger){ c.refused+=dt; if(c.refused>1.0&&!c.disobeyed){ c.disobeyed=true; dT+=0.12; stats.disobey++; log('“앞으로”를 거부했다. 차가 지나갔다.','nice'); events.push('차 앞에서 “앞으로”를 거부했다.'); learn('지적 불복종 — 위험하면 명령을 거부한다. 안내견이 배우는 마지막이자 가장 중요한 기술.'); say("'앞으로'라는데 안 갔다. 차가 지나갔다. 나 잘한 거 맞지?",0,'…그래. 네가 맞았어.'); } }
+      else if(danger){ c.refused+=dt; if(c.refused>1.0&&!c.disobeyed){ c.disobeyed=true; dT+=0.12; stats.disobey++; log('“앞으로”를 거부했다. 차가 지나갔다.','nice'); events.push('차 앞에서 “앞으로”를 거부했다.'); learn('지적 불복종 — 위험하면 명령을 거부한다. 안내견이 배우는 마지막이자 가장 중요한 기술.'); face('proud',2.6); say("'앞으로'라는데 안 갔다. 차가 지나갔다. 나 잘한 거 맞지?",0,'…그래. 네가 맞았어.'); } }
     } else if(c.phase==='crossing'){
-      if(D.x>=c.x1){ c.phase='done'; const first=intro<3; if(first){ intro=3; bloom=1; } dT+=0.08; stats.crossed++; log('건넜다.','nice'); say(first?'건넜다! 어? 세상에 색이 든다.':'건넜다. 지우 손이 가볍다.',0,first?'봐, 나도 알아. 네 걸음이 달라졌어.':'고마워.'); }
+      if(D.x>=c.x1){ c.phase='done'; const first=intro<3; if(first){ intro=3; bloom=1; } dT+=0.08; stats.crossed++; log('건넜다.','nice'); face('joy',3); say(first?'건넜다! 어? 세상에 색이 든다.':'건넜다. 지우 손이 가볍다.',0,first?'봐, 나도 알아. 네 걸음이 달라졌어.':'고마워.'); }
     }
     if((c.phase==='crossing'||c.phase==='commanded')&&onRoad&&danger){
       D={x:c.x0-90,y:D.y}; P={x:D.x-55,y:D.y+30}; DV={x:0,y:0}; PV={x:0,y:0}; handlerStun=1.0;
       c.phase='commanded'; c.refused=0; dT-=0.1; mood=Math.max(0,mood-0.15); stats.danger++; hitFlash=1; rumble(1,0.9,300);
-      log('차. 물러섰다.','warn'); events.push('차 앞으로 들어갔다.'); learn('음향신호기가 있는 신호등 횡단보도는 셋 중 하나뿐이다.'); say('차!! 물러선다. 심장이 쿵쿵.',0,'…고마워. 나 지금 차도였어?');
+      log('차. 물러섰다.','warn'); events.push('차 앞으로 들어갔다.'); learn('음향신호기가 있는 신호등 횡단보도는 셋 중 하나뿐이다.'); face('shock',2.4); say('차!! 물러선다. 심장이 쿵쿵.',0,'…고마워. 나 지금 차도였어?');
     }
   }
   for(const k of cars) k.y+=k.v*dt; cars=cars.filter(k=>k.y<900);
@@ -474,7 +475,8 @@ function step(dt,inp){
   trust=Math.max(0,Math.min(1,trust+dT)); trustShown+=(trust-trustShown)*Math.min(1,dt*2.2);
   mood=Math.max(0,Math.min(1,mood));
   camX += ((P.x+D.x)/2-camX-W*0.42)*Math.min(1,dt*3);
-  earUp+=((sniffTimer>0||(target&&focus<0.5))?1:0-earUp)*Math.min(1,dt*8);
+  if(t>exprUntil) expr=sniffTimer>0?'sniff':'work';
+  earUp+=(((sniffTimer>0||expr==='sniff'||expr==='shock'||(target&&focus<0.5))?1:0)-earUp)*Math.min(1,dt*8);
   noteTimer-=dt; if(noteTimer<0) noteEl.style.opacity=0;
 }
 
@@ -646,12 +648,19 @@ function drawDog(g,dx,dy,C,ink,blob,shadeOf,color){
   if(color||trustShown>0.2){ g.strokeStyle=INK.leash; g.lineWidth=INK.lineChar; g.beginPath(); g.moveTo(dx+S*0.2,dy-S*0.5-bob); g.lineTo(dx+S*0.2,dy+S*0.45-bob); g.stroke(); }
   // 귀 — 보리는 먹색 귀 하나. 냄새 맡으면 안테나처럼 선다
   g.fillStyle=dog.inkEar?INK.ink:dark?C('#3a3a38',mix(base,'#000',0.25)):C(INK.grey,mix(base,'#000',0.3));
-  g.save(); g.translate(hx-R*0.55,hy-R*0.45); g.rotate(0.2-earUp*(dog.inkEar?2.6:1.2)); g.beginPath(); g.ellipse(0,R*0.6,R*0.32,R*0.62,0,0,6.28); g.fill(); ink(INK.lineChar); g.stroke(); g.restore();
+  const EW=dog.inkEar?R*0.42:R*0.32, EH=dog.inkEar?R*0.75:R*0.62;
+  g.save(); g.translate(hx-R*0.55,hy-R*0.45); g.rotate(0.2-earUp*(dog.inkEar?2.6:1.2)); g.beginPath(); g.ellipse(0,EH*0.85,EW,EH,0,0,6.28); g.fill(); ink(INK.lineChar); g.stroke(); g.restore();
   blob(hx,hy,R,R*0.92,base,INK.lineChar);
   blob(hx+R*0.62,hy+R*0.22,R*0.42,R*0.32,base,INK.lineIn+0.5);
-  g.fillStyle=dark?'#fff':INK.ink; g.beginPath(); g.arc(hx+R*0.18,hy-R*0.12,S*INK.eye,0,6.28); g.fill();
-  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*1.0,hy+R*0.1,S*INK.eye*0.95,0,6.28); g.fill();
-  if(color&&trustShown>0.35){ g.fillStyle='#F59E9E'; g.beginPath(); g.arc(hx+R*0.45,hy+R*0.2,R*0.2,0,6.28); g.fill(); }   // 볼: 신뢰가 오르면 색이 든다
+  // 눈: 헤벌쭉이면 호, 뾰로통이면 옆으로. 코: 큰 검정 덩어리, 킁킁이면 더 큼
+  const ex=hx+R*(expr==='sulk'?0.02:0.18), ey=hy-R*0.12;
+  if(expr==='joy'){ ink(2.5); g.strokeStyle=INK.ink; g.beginPath(); g.arc(ex,ey+2,R*0.14,Math.PI+0.2,-0.2); g.stroke(); }
+  else { g.fillStyle=dark?'#fff':INK.ink; g.beginPath(); g.arc(ex,ey,S*INK.eye,0,6.28); g.fill(); }
+  if(expr==='proud'){ ink(3); g.strokeStyle=INK.ink; g.beginPath(); g.moveTo(hx+R*0.05,hy-R*0.42); g.lineTo(hx+R*0.34,hy-R*0.36); g.stroke(); }
+  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*1.0,hy+R*0.12,S*INK.eye*(expr==='sniff'?3.2:1.9),0,6.28); g.fill();
+  if(expr==='shock'){ g.fillStyle=INK.ink; g.beginPath(); g.ellipse(hx+R*0.55,hy+R*0.35,R*0.17,R*0.22,0,0,6.28); g.fill(); g.fillStyle='#fff'; ink(1.5); for(const [ox,oy] of [[-R*0.9,-R*0.9],[R*0.2,-R*1.15]]){ g.beginPath(); g.ellipse(hx+ox,hy+oy,2.5,4,0.3,0,6.28); g.fill(); g.stroke(); } }
+  if(expr==='joy'){ g.fillStyle='#F08080'; g.beginPath(); g.ellipse(hx+R*0.7,hy+R*0.5,R*0.11,R*0.15,0,0,6.28); g.fill(); ink(1.5); g.stroke(); }
+  if((color&&trustShown>0.35)||expr==='joy'){ g.fillStyle='#F59E9E'; g.beginPath(); g.arc(hx+R*0.45,hy+R*0.2,R*0.2,0,6.28); g.fill(); }   // 볼: 신뢰가 오르면 색이 든다
   if(sniff&&!reduced){ ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); const w=Math.sin(t*9)*2; g.beginPath(); g.moveTo(hx+R*1.15,hy+R*0.35); g.quadraticCurveTo(hx+R*1.4+w,hy+R*0.55,hx+R*1.3,hy+R*0.9); g.stroke(); }
   if(holding){ g.font='700 14px Gaegu'; g.fillStyle=INK.ink; g.textAlign='center'; g.fillText('멈춤',dx,dy-S-20); }
 }
