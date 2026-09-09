@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>끌림 — 놀아보기</title>
-<meta name="description" content="남의 개를 산책시킨다. 합이 맞을수록 흑백 골목에 색이 돌아온다. 부산 영도, 전주 한옥마을. 브라우저 프로토타입.">
+<meta name="description" content="당신은 개다. 지우는 하네스를 잡고 따라온다. 지우는 보지 못한다. 신뢰가 쌓일수록 흑백 골목에 색이 돌아온다. 브라우저 프로토타입.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23111'/><text x='50%' y='58%' font-size='34' text-anchor='middle' dominant-baseline='middle'>🐾</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -35,8 +35,9 @@
   canvas{display:block;width:100%;height:100%}
   .note{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
     font-family:"Gaegu",cursive;font-weight:700;font-size:21px;color:var(--ink);
-    background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:6px 18px;white-space:nowrap;pointer-events:none;
+    background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:6px 18px;white-space:nowrap;pointer-events:none;text-align:center;
     box-shadow:3px 3px 0 #111;transition:opacity .3s;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+  .note small{display:block;font-family:"Gowun Dodum",sans-serif;font-weight:400;font-size:12.5px;color:var(--g1);white-space:normal;line-height:1.35;margin-top:1px}
   .note.big{font-size:24px}
   .pad{position:absolute;right:10px;top:10px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;
     color:var(--g1);background:#fff;border:2px solid var(--ink);border-radius:12px;padding:3px 9px}
@@ -88,12 +89,12 @@
     <div class="brand">
       <h1><a href="../">끌림</a></h1>
       <span class="en">Drawn · Prototype</span>
-      <span class="tag">남의 개를 산책시킨다. 합이 맞을수록 흑백 골목에 색이 돌아온다.</span>
+      <span class="tag">당신은 개다. 지우는 하네스를 잡고 반 발 뒤에서 따라온다. 발을 맞출수록 색이 돌아온다.</span>
     </div>
     <div class="meters">
-      <div class="m"><span class="k">합</span><div class="bar rap"><i id="b-rap"></i></div></div>
-      <div class="m"><span class="k">개 기분</span><div class="bar mood"><i id="b-mood"></i></div></div>
-      <div class="m"><span class="k">줄 긴장</span><div class="bar"><i id="b-ten"></i></div></div>
+      <div class="m"><span class="k">신뢰</span><div class="bar rap"><i id="b-rap"></i></div></div>
+      <div class="m"><span class="k">개 마음</span><div class="bar mood"><i id="b-mood"></i></div></div>
+      <div class="m"><span class="k">하네스</span><div class="bar"><i id="b-ten"></i></div></div>
       <div class="m"><span class="k">남은 시간</span><span class="v" id="v-time">1:30</span></div>
     </div>
   </header>
@@ -103,7 +104,7 @@
       <canvas id="c"></canvas>
       <div class="where" id="where">부산 · 영도</div>
       <div class="pad" id="pad">키보드</div>
-      <div class="note" id="note">왼쪽 스틱으로 걷고, 트리거로 줄을 쥐세요. (초기 프로토타입 — 새 버전은 당신이 개입니다)</div>
+      <div class="note" id="note">왼쪽 스틱은 당신, 개입니다. 지우가 따라옵니다.</div>
       <div class="end" id="end">
         <h3 id="end-title">오늘의 산책</h3>
         <img class="pic" id="end-pic" alt="오늘 색이 돌아온 골목">
@@ -115,33 +116,33 @@
 
     <aside>
       <div class="panel">
-        <h2>동네 · 어디서 걸을까</h2>
+        <h2>동네 · 배경이 바뀐다</h2>
         <div class="list" id="cities"></div>
         <button class="geo" id="geo" type="button" style="margin-top:7px">📍 내 위치에서 가까운 동네로 (선택)</button>
       </div>
       <div class="panel">
-        <h2>오늘 맡은 개 · 합은 개마다 남는다</h2>
+        <h2>오늘의 나 · 신뢰는 개마다 남는다</h2>
         <div class="list" id="dogs"></div>
       </div>
       <div class="panel">
         <h2>조작</h2>
         <div class="keys">
-          <div><kbd>왼 스틱 / WASD</kbd><em>걷는다</em></div>
-          <div><kbd>RT / Shift</kbd><em>줄을 세게 쥔다</em></div>
-          <div><kbd>B / X</kbd><em>줄을 놓는다 · 다시 잡는다</em></div>
+          <div><kbd>왼 스틱 / WASD</kbd><em>개가 걷는다 — 지우가 따라온다</em></div>
+          <div><kbd>RT / Shift</kbd><em>집중 — 냄새와 고양이를 참는다</em></div>
+          <div><kbd>B / 스페이스</kbd><em>멈춤 — 연석 앞에서, 차 앞에서, “앞으로” 앞에서도</em></div>
           <div><kbd>1 2 3</kbd><em>개 바꾸기</em></div>
-          <div><kbd>터치</kbd><em>왼쪽 끌기=걷기 · 오른쪽 누르기=쥐기</em></div>
+          <div><kbd>터치</kbd><em>왼쪽 끌기=걷기 · 오른쪽 누르기=멈춤</em></div>
         </div>
       </div>
       <div class="panel">
         <h2>산책 중</h2>
-        <div class="log" id="log"><div>집을 나섰다.</div></div>
+        <div class="log" id="log"><div>하네스를 찼다.</div></div>
       </div>
     </aside>
   </div>
 
   <footer>
-    <span>합이 오르는 것 — 냄새 맡게 두기 · 멈추면 기다리기 · 걸음 맞추기. 떨어지는 것 — 확 당김 · 끌고 가기.</span>
+    <span>신뢰가 오르는 것 — 연석에서 멈추기 · 둘의 폭으로 돌아가기 · 걸음 맞추기 · 차가 오면 “앞으로”를 거부하기. 떨어지는 것 — 부딪히게 하기 · 앞서 나가기 · 냄새에 끌려가기.</span>
     <span><a href="../design/">기획서</a> · <span id="fps"></span></span>
   </footer>
 </div>
@@ -165,151 +166,159 @@ const endPic=document.getElementById('end-pic'), endPct=document.getElementById(
 const logEl=document.getElementById('log'), dogsEl=document.getElementById('dogs'), citiesEl=document.getElementById('cities');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── 개 ─── 개마다 다른 건 스탯이 아니라 손맛이다. */
+/* ── 개 ─── 안내견 후보 셋. 다른 건 스탯이 아니라 손맛이다. */
 const DOGS=[
-  {id:0,name:'콩이',kind:'강아지',bw:'#fff',co:'#E3B67C',size:12,speed:190,mass:0.35,curious:1.6,bolt:0.9,rest:0.1,earDown:true,
-   note:'뭐든 다 궁금해요. 고양이 보면 놓치지 마세요.'},
-  {id:1,name:'복동',kind:'노견',bw:INK.grey,co:'#B8A78F',size:14,speed:70,mass:0.8,curious:0.7,bolt:0.05,rest:1.4,earDown:true,spots:true,
-   note:'열세 살이에요. 자꾸 멈춰요. 그냥 기다려 주세요.'},
-  {id:2,name:'두식',kind:'대형견',bw:'#111',co:'#3B3532',size:17,speed:150,mass:2.4,curious:1.0,bolt:0.5,rest:0.3,earDown:false,
-   note:'힘이 세요. 줄을 세게 잡으면 오히려 더 당겨요.'}
+  {id:0,name:'보리',kind:'래브라도 · 1살',bw:'#fff',co:'#E3B67C',size:14,speed:175,curious:1.6,earDown:true,
+   note:'첫 파트너. 뭐든 다 궁금해요. 집중(트리거)을 잡아 주세요.'},
+  {id:1,name:'은아',kind:'래브라도 · 7살',bw:INK.grey,co:'#D9C9A8',size:14,speed:135,curious:0.6,earDown:true,
+   note:'베테랑. 느리지만 멈출 곳에서 멈춰요. 은퇴가 가까워요.'},
+  {id:2,name:'바다',kind:'골든 리트리버 · 3살',bw:'#111',co:'#C48A3F',size:16,speed:190,curious:1.0,earDown:true,
+   note:'힘이 좋아요. 앞서 나가면 하네스가 당겨져요 — 사람 걸음에 맞추세요.'}
 ];
+const HANDLER={name:'지우',intro:'지우는 스물넷에 시력을 잃었다. 오늘이 함께 걷는 첫날이다.'};
 
+/* ── 딴짓거리 ─── 동네의 냄새들. */
 const BASE={
-  lamp: {k:'lamp', name:'전봇대',  pull:[1.4,1.2,1.0], r:7,  sniff:2.2, line:'전봇대 밑에서 한참 냄새를 맡았다.'},
-  tree: {k:'tree', name:'가로수',  pull:[1.0,1.3,0.9], r:16, sniff:2.6, line:'가로수 아래 그늘에서 쉬었다.'},
-  hyd:  {k:'hyd',  name:'소화전',  pull:[1.3,0.9,1.2], r:6,  sniff:1.8, line:'소화전을 확인했다. 중요한 일이다.'},
+  lamp: {k:'lamp', name:'전봇대',  pull:[1.4,1.2,1.0], r:7,  sniff:2.2, line:'전봇대 밑 냄새를 맡았다.'},
+  tree: {k:'tree', name:'가로수',  pull:[1.0,1.3,0.9], r:16, sniff:2.6, line:'가로수 아래서 잠깐 쉬었다.'},
+  hyd:  {k:'hyd',  name:'소화전',  pull:[1.3,0.9,1.2], r:6,  sniff:1.8, line:'소화전을 확인했다.'},
   pud:  {k:'pud',  name:'물웅덩이',pull:[1.5,0.3,0.7], r:12, sniff:1.5, line:'물웅덩이에 발을 담갔다.'},
-  grass:{k:'grass',name:'잔디',    pull:[1.2,1.5,1.1], r:20, sniff:2.4, line:'잔디에 등을 비볐다.'},
+  grass:{k:'grass',name:'잔디',    pull:[1.2,1.5,1.1], r:20, sniff:2.4, line:'잔디에 코를 박았다.'},
   cat:  {k:'cat',  name:'고양이',  pull:[3.2,0.6,2.2], r:7,  sniff:0.0, line:'고양이를 쫓으려 했다.', moves:true},
   dog2: {k:'dog2', name:'다른 개', pull:[2.2,1.1,1.6], r:9,  sniff:2.0, line:'다른 개와 인사했다.', moves:true}
 };
 
-/* ── 동네 ─── 도시 하나 = 항목 하나. 앱의 CityData.swift와 같은 구조. */
+/* ── 장애물 ─── 사람이 부딪히는 것들. 실태에서 가져왔다. 단위 px (100px = 1m). */
+const HAZ={
+  bollard:{name:'볼라드',     r:16, lane:45,  fact:'볼라드 96%가 규정과 다르게 설치돼 있다 — 시각장애인의 지뢰.'},
+  scooter:{name:'킥보드',     r:38, lane:0,   fact:'점자블록 위에 세워 둔 킥보드. 발이 걸린다.'},
+  car:    {name:'불법 주차',  r:85, lane:60,  half:[95,42], fact:'인도에 올린 차. 점자블록이 끊긴다.'},
+  sign:   {name:'낮은 간판',  r:32, lane:-45, overhead:true, fact:'개는 지나가지만 사람은 머리를 부딪히는 높이. 안내견은 자기 키의 두 배를 상상하도록 훈련받는다.'},
+  fence:  {name:'공사 펜스',  r:55, lane:-20, half:[50,12], fact:'공사 펜스가 점자블록을 덮었다. 우회로 안내는 없다.'}
+};
+
+/* ── 동네 ─── 배경이다. 도시 하나 = 항목 하나. */
 const CITIES=[
   {id:'busan', name:'부산 · 영도', short:'영도', lat:35.091, lng:129.068,
    intro:'바닷바람이 분다. 갈매기가 있고, 어묵 냄새가 골목까지 온다.',
-   style:'seaside', horizon:'sea', wind:0.6, first:'omuk',
+   style:'seaside', horizon:'sea', wind:0.6,
    pal:{skyBW:'#D6D6D1', sky:'#BFE3F4', wallBW:'#fff', wall:'#EAF0F2', roofBW:'#111', roof:'#3E6E8E',
         walkBW:'#F6F6F2', walk:'#EDE7DA', roadA:'#4A4F5A', roadB:'#2B2F38', water:'#7FB7D6', far:'#9FC7DD'},
    base:['lamp','cat','dog2','pud','hyd'],
    spots:[
-     {k:'omuk',    name:'어묵 포장마차', pull:[2.3,1.8,2.0], r:11, sniff:3.0, line:'어묵 국물 냄새 앞에서 한참 서 있었다.'},
-     {k:'gull',    name:'갈매기',       pull:[3.0,0.5,2.0], r:7,  sniff:0,   line:'갈매기를 쫓으려 했다. 갈매기가 이겼다.', moves:true, fly:true},
+     {k:'omuk',    name:'어묵 포장마차', pull:[2.3,1.8,2.0], r:11, sniff:3.0, line:'어묵 국물 냄새 앞에서 한참 섰다.'},
+     {k:'gull',    name:'갈매기',       pull:[3.0,0.5,2.0], r:7,  sniff:0,   line:'갈매기를 쫓으려 했다.', moves:true, fly:true},
      {k:'net',     name:'그물 말리는 곳',pull:[1.6,1.4,1.3], r:14, sniff:2.4, line:'그물에서 바다 냄새를 맡았다.'},
      {k:'tetra',   name:'방파제',       pull:[1.2,0.8,1.5], r:16, sniff:2.0, line:'방파제 바위 틈을 들여다봤다.'},
      {k:'seaweed', name:'미역 널어둔 곳',pull:[1.5,1.2,1.0], r:12, sniff:2.2, line:'미역 널어둔 데를 킁킁댔다.'}
    ]},
   {id:'jeonju', name:'전주 · 한옥마을', short:'한옥마을', lat:35.815, lng:127.153,
    intro:'기와 담이 이어진다. 감나무가 있고, 국밥집 뒷문에서 김이 난다.',
-   style:'hanok', horizon:'hills', wind:0.2, first:'gukbap',
+   style:'hanok', horizon:'hills', wind:0.2,
    pal:{skyBW:'#E0DED6', sky:'#F3E6C8', wallBW:'#fff', wall:'#F5EDDC', roofBW:'#111', roof:'#4A4A48',
         walkBW:'#F6F6F2', walk:'#E8DFCB', roadA:'#6B5E4E', roadB:'#3E3630', water:null, far:'#C9D3B0'},
    base:['lamp','cat','dog2','grass','tree'],
    spots:[
      {k:'gukbap',   name:'국밥집 뒷문', pull:[2.2,1.8,2.1], r:9,  sniff:3.0, line:'콩나물국밥집 뒷문에서 국물 냄새를 찾았다.'},
-     {k:'persimmon',name:'감나무',     pull:[1.6,1.4,1.1], r:16, sniff:2.4, line:'떨어진 감을 하나 물고 왔다.'},
+     {k:'persimmon',name:'감나무',     pull:[1.6,1.4,1.1], r:16, sniff:2.4, line:'떨어진 감을 하나 물었다.'},
      {k:'hanji',    name:'한지 공방',   pull:[1.1,1.2,0.8], r:9,  sniff:2.0, line:'한지 공방 앞 풀 냄새를 맡았다.'},
      {k:'well',     name:'우물가',     pull:[1.4,1.0,1.2], r:12, sniff:2.0, line:'우물가 돌 위에 앉았다.'},
-     {k:'chocopie', name:'초코파이 가게',pull:[2.0,1.5,1.7], r:9,  sniff:2.6, line:'초코파이 가게 앞 줄 선 사람들 다리 사이를 지났다.'}
+     {k:'chocopie', name:'초코파이 가게',pull:[2.0,1.5,1.7], r:9,  sniff:2.6, line:'초코파이 가게 앞 줄 사이를 지났다.'}
    ]}
 ];
 let city=CITIES[0];
 function cityPool(c){ return c.spots.map(s=>({...s,local:true})).concat(c.base.map(k=>BASE[k])); }
 
+/* ── 상태 ─── */
 let dog=null;
-const WALK=90, L0=105, LMAX=135;
-let P,V,D,DV,grip,held,gripBtnLatch;
-let spots=[], sniffCount, mood, tension, t, running, events, camX;
-let sniffTimer, target, wantFor, yankCool, catchCool, dropPromptShown, yankFlash=0, gust=0, gustT=0;
-let rapport=0, rapShown=0, bloom=0;
-let intro={stage:0};                       // 첫 10초: 0 시작 → 1 당김 → 2 풀어줌 → 3 색
+const WALK=90, HREST=80, HMAX=105, DOGSP=145, HANDSP=160, COURSE=14400;
+let P,PV,D,DV,heading,focus,holding;
+let spots=[], hazards=[], crossings=[], cars=[];
+let mood, tension, t, running, events, camX, handlerStun, fastFor, gust=0, gustT=0, hitFlash=0;
+let sniffTimer, target, trust=0, trustShown=0, bloom=0, intro=0;
+let stats;
 let W=0,H=0,DPR=1, lastRumble=0;
 
-function loadRap(id){ try{ return Math.max(0,Math.min(1,parseFloat(localStorage.getItem('drawn.rap.'+id))||0)); }catch(e){ return 0; } }
-function saveRap(id,v){ try{ localStorage.setItem('drawn.rap.'+id,String(v)); }catch(e){} }
+function loadTrust(id){ try{ return Math.max(0,Math.min(1,parseFloat(localStorage.getItem('drawn.trust.'+id))||0)); }catch(e){ return 0; } }
+function saveTrust(id,v){ try{ localStorage.setItem('drawn.trust.'+id,String(v)); }catch(e){} }
 
 function reset(){
-  P={x:120,y:0}; V={x:0,y:0}; D={x:180,y:10}; DV={x:0,y:0};
-  grip=0.55; held=true; gripBtnLatch=false;
-  spots=[]; sniffCount=0; mood=0.7; tension=0; t=0; running=true; events=[]; camX=0;
-  sniffTimer=0; target=null; wantFor=0; yankCool=0; catchCool=0; dropPromptShown=false; gust=0; gustT=2+Math.random()*4; bloom=0;
-  intro={stage:0};
-  logEl.innerHTML='<div>'+city.short+'. 집을 나섰다.</div>';
+  D={x:180,y:0}; DV={x:0,y:0}; P={x:115,y:28}; PV={x:0,y:0}; heading={x:1,y:0}; focus=0; holding=false;
+  spots=[]; hazards=[]; crossings=[]; cars=[]; mood=0.7; tension=0; t=0; running=true; events=[]; camX=0;
+  handlerStun=0; fastFor=0; gust=0; gustT=2+Math.random()*4; hitFlash=0; sniffTimer=0; target=null; bloom=0; intro=0;
+  stats={hits:0,passed:0,curb:0,disobey:0,danger:0,crossed:0,sniff:0};
+  logEl.innerHTML='<div>'+city.short+'. '+HANDLER.name+'와 나섰다.</div>';
   endEl.classList.remove('show');
-  const pool=cityPool(city);
-  // 첫 10초: 바로 앞에 이 동네의 가장 끌리는 것 하나. 개가 즉시 끌린다.
-  const firstK=pool.find(p=>p.k===city.first);
-  spots.push({k:firstK,x:P.x+250,y:-42,used:false,vx:0,ph:0,first:true});
-  for(let x=520;x<8000;x+=90+Math.random()*130) spawn(x,pool);
+  // 횡단보도: 36m마다 골목 차도가 인도를 끊는다. 음향신호기는 없다.
+  for(let x=2700;x<COURSE-600;x+=3600) crossings.push({x0:x,x1:x+600,phase:'approach',still:0,since:0,refused:0,spawnT:1,cycle:Math.random()*19,disobeyed:false});
+  const onRoad=x=>crossings.some(c=>x>c.x0-120&&x<c.x1+120);
+  // 장애물: 첫 킥보드는 4m 앞. 실태 비율대로 볼라드·킥보드가 흔하다.
+  hazards.push(mkHaz('scooter',550,5));
+  const pool=['bollard','bollard','scooter','car','sign','fence'];
+  for(let x=1000;x<COURSE-400;x+=500+Math.random()*400){ if(onRoad(x)) continue; const k=pool[(Math.random()*pool.length)|0]; hazards.push(mkHaz(k,x,HAZ[k].lane+(Math.random()*16-8))); }
+  // 딴짓거리: 장애물·횡단보도와 겹치지 않게
+  const sp=cityPool(city);
+  for(let x=700;x<COURSE-400;x+=400+Math.random()*400){
+    const k=sp[(Math.random()*sp.length)|0]; const y=k.fly?-60:(Math.random()<0.5?-1:1)*(45+Math.random()*25);
+    if(onRoad(x)) continue; if(hazards.some(h=>Math.hypot(h.x-x,h.y-y)<130)) continue;
+    spots.push({k:k,x:x,y:y,used:false,vx:k.moves?(Math.random()<0.5?-1:1)*(10+Math.random()*20):0,ph:Math.random()*6.28});
+  }
   whereEl.textContent=city.name;
-  say(city.intro,3000);
+  say('하네스를 찼다. 왼쪽 스틱은 당신 — '+HANDLER.name+'는 오른손으로 따라온다.',4200,HANDLER.intro);
 }
-function spawn(x,pool){
-  let k=pool[(Math.random()*pool.length)|0];
-  if(!k.local && Math.random()<0.35) k=pool[(Math.random()*city.spots.length)|0];
-  const y=(Math.random()<0.5?-1:1)*(28+Math.random()*34);
-  spots.push({k:k,x:x,y:k.fly?-58-Math.random()*20:y,used:false,vx:k.moves?(Math.random()<0.5?-1:1)*(10+Math.random()*25):0,ph:Math.random()*6.28});
-}
+function mkHaz(k,x,y){ const h=HAZ[k]; return {k:k,x:x,y:y,r:h.r,half:h.half||null,overhead:!!h.overhead,hit:false,passed:false}; }
 function log(text,cls){
   const d=document.createElement('div'); d.className=cls||''; d.textContent=text;
   logEl.appendChild(d); while(logEl.children.length>40) logEl.removeChild(logEl.firstChild);
   logEl.scrollTop=logEl.scrollHeight;
 }
 let noteTimer=0;
-function say(s,ms,big){ noteEl.textContent=s; noteEl.className='note'+(big?' big':''); noteEl.style.opacity=1; noteTimer=(ms||2600)/1000; }
+function say(s,ms,fact){ noteEl.textContent=s; if(fact){ const sm=document.createElement('small'); sm.textContent=fact; noteEl.appendChild(sm); } noteEl.style.opacity=1; noteTimer=(ms||(fact?5200:2800))/1000; }
 
-/* ── 입력 ─── */
+/* ── 입력 ─── 스틱=개, 트리거=집중, B/스페이스=멈춤 */
 const keys={};
 window.addEventListener('keydown',e=>{
   keys[e.code]=true;
   if(e.code==='Digit1')pickDog(0); if(e.code==='Digit2')pickDog(1); if(e.code==='Digit3')pickDog(2);
-  if(e.code==='KeyX') toggleLeash();
   if(['Space','ArrowUp','ArrowDown'].includes(e.code)) e.preventDefault();
 });
 window.addEventListener('keyup',e=>{keys[e.code]=false;});
 let gp=null;
-const touch={move:null,grip:false,lastTap:0,gripId:null};
+const touch={move:null,hold:false,holdId:null};
 frame.addEventListener('pointerdown',e=>{
   if(e.pointerType!=='touch') return;
   const r=frame.getBoundingClientRect(); const x=e.clientX-r.left;
   if(x<r.width*0.5){ touch.move={id:e.pointerId,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY}; }
-  else { touch.grip=true; const now=performance.now(); if(now-touch.lastTap<320) toggleLeash(); touch.lastTap=now; touch.gripId=e.pointerId; }
+  else { touch.hold=true; touch.holdId=e.pointerId; }
   frame.setPointerCapture(e.pointerId);
 });
 frame.addEventListener('pointermove',e=>{ if(touch.move&&e.pointerId===touch.move.id){ touch.move.x=e.clientX; touch.move.y=e.clientY; } });
-function touchEnd(e){ if(touch.move&&e.pointerId===touch.move.id) touch.move=null; if(e.pointerId===touch.gripId) touch.grip=false; }
+function touchEnd(e){ if(touch.move&&e.pointerId===touch.move.id) touch.move=null; if(e.pointerId===touch.holdId) touch.hold=false; }
 frame.addEventListener('pointerup',touchEnd); frame.addEventListener('pointercancel',touchEnd);
 
 function readInput(){
-  let mx=0,my=0,g=null,drop=false;
+  let mx=0,my=0,f=0.27,hold=false;
   const pads=navigator.getGamepads?navigator.getGamepads():[];
   gp=null; for(const p of pads){ if(p&&p.connected){gp=p;break;} }
   if(gp){
     const ax=gp.axes[0]||0, ay=gp.axes[1]||0;
     if(Math.hypot(ax,ay)>0.15){ mx=ax; my=ay; }
-    const rt=gp.buttons[7]?gp.buttons[7].value:0;
-    g=0.25+0.75*rt;
-    const b=gp.buttons[1]&&gp.buttons[1].pressed;
-    if(b&&!gripBtnLatch){drop=true;} gripBtnLatch=!!b;
+    f=gp.buttons[7]?gp.buttons[7].value:0;
+    hold=!!(gp.buttons[1]&&gp.buttons[1].pressed);
     padEl.textContent='컨트롤러'; padEl.classList.add('on');
-  } else if(touch.move||touch.grip){
+  } else if(touch.move||touch.hold){
     if(touch.move){ const dx=touch.move.x-touch.move.x0, dy=touch.move.y-touch.move.y0; const L=Math.hypot(dx,dy); const k=Math.min(1,L/48); if(L>4){ mx=dx/L*k; my=dy/L*k; } }
-    g=touch.grip?1.0:0.45;
+    f=0.6; hold=touch.hold;
     padEl.textContent='터치'; padEl.classList.add('on');
   } else {
     if(keys.KeyA||keys.ArrowLeft)mx-=1; if(keys.KeyD||keys.ArrowRight)mx+=1;
     if(keys.KeyW||keys.ArrowUp)my-=1;   if(keys.KeyS||keys.ArrowDown)my+=1;
     const L=Math.hypot(mx,my); if(L>1){mx/=L;my/=L;}
-    g=(keys.ShiftLeft||keys.ShiftRight)?1.0:0.45;
+    f=(keys.ShiftLeft||keys.ShiftRight)?1.0:0.27;
+    hold=!!(keys.Space||keys.KeyX);
     padEl.textContent='키보드'; padEl.classList.remove('on');
   }
-  return {mx,my,g,drop};
-}
-function toggleLeash(){
-  if(held){ held=false; log('줄을 놓았다.','warn'); say('놓았다. 가까이 가서 다시 잡으세요.'); }
-  else if(Math.hypot(D.x-P.x,D.y-P.y)<40 && catchCool<=0){ held=true; log('다시 잡았다.','nice'); say('잡았다.'); }
-  else say('너무 멀다. 더 가까이.');
+  return {mx,my,f,hold};
 }
 function rumble(strong,weak,ms){
   if(!gp||!gp.vibrationActuator) return;
@@ -319,17 +328,16 @@ function rumble(strong,weak,ms){
 
 /* ── 고르기 ─── */
 function pickDog(i){
-  if(dog) saveRap(dog.id,rapport);
-  dog=DOGS[i]; rapport=loadRap(dog.id); rapShown=rapport;
-  D.x=P.x+60; D.y=P.y+10; DV={x:0,y:0}; target=null; sniffTimer=0; mood=0.7;
+  if(dog) saveTrust(dog.id,trust);
+  dog=DOGS[i]; trust=loadTrust(dog.id); trustShown=trust;
+  target=null; sniffTimer=0; mood=0.7;
   renderDogs(); log(dog.name+' ('+dog.kind+') — "'+dog.note+'"');
-  if(intro.stage>=3) say(dog.name+': '+dog.note,4200);
 }
 function pickCity(id,quiet){
   const c=CITIES.find(x=>x.id===id); if(!c) return;
   city=c; try{ localStorage.setItem('drawn.city',id); }catch(e){}
   const u=new URL(location.href); u.searchParams.set('city',id); history.replaceState(null,'',u);
-  renderCities(); reset(); if(dog){ D.x=P.x+60; D.y=P.y+10; }
+  renderCities(); reset();
   if(!quiet) log(city.name+'으로 왔다.','nice');
 }
 function renderCities(){
@@ -343,7 +351,7 @@ function renderCities(){
 function renderDogs(){
   dogsEl.innerHTML='';
   DOGS.forEach(d=>{
-    const rp=d===dog?rapport:loadRap(d.id);
+    const rp=d===dog?trust:loadTrust(d.id);
     const b=document.createElement('button'); b.className='pick'+(d===dog?' on':''); b.type='button';
     b.innerHTML='<span class="ic" style="background:'+(rp>0.2?d.co:d.bw)+'"></span><div><b>'+d.name+'</b><span>'+d.kind+' · '+d.note+'</span></div><span class="rp">'+Math.round(rp*100)+'%</span>';
     b.onclick=()=>pickDog(d.id); dogsEl.appendChild(b);
@@ -360,117 +368,127 @@ document.getElementById('geo').onclick=()=>{
   },()=>{ say('위치를 못 받았습니다. 직접 고르세요.'); },{timeout:6000,maximumAge:600000});
 };
 
-function chooseTarget(){
-  let best=null,bs=0;
-  const reach=320*(1+city.wind*gust);
-  for(const s of spots){
-    if(s.used) continue;
-    const dx=s.x-D.x, dy=s.y-D.y, dist=Math.hypot(dx,dy);
-    if(dist>reach||dx<-60) continue;
-    if(s.first) return s;                                     // 첫 10초는 정해져 있다
-    const pull=s.k.pull[dog.id]*dog.curious*(s.k.local?1.15:1);
-    const sc=pull/(1+dist/90)+(s.k.moves?dog.bolt*1.2:0)+Math.random()*0.25;
-    if(sc>bs){bs=sc;best=s;}
-  }
-  return best;
+/* ── 충돌 ─── 차·펜스는 직사각형, 나머지는 원 */
+function inside(p,h,pad){ if(h.half){ return Math.abs(p.x-h.x)<h.half[0]+pad && Math.abs(p.y-h.y)<h.half[1]+pad; } return Math.hypot(p.x-h.x,p.y-h.y)<h.r+pad; }
+function pushOut(p,h,pad){
+  if(h.half){ const dx=p.x-h.x, dy=p.y-h.y, ex=h.half[0]+pad, ey=h.half[1]+pad; if(Math.abs(dx)>=ex||Math.abs(dy)>=ey) return p;
+    const px=ex-Math.abs(dx), py=ey-Math.abs(dy); return px<py?{x:h.x+(dx>=0?ex:-ex),y:p.y}:{x:p.x,y:h.y+(dy>=0?ey:-ey)}; }
+  const r=h.r+pad, dx=p.x-h.x, dy=p.y-h.y, L=Math.hypot(dx,dy); if(L>=r) return p; return L>1?{x:h.x+dx/L*r,y:h.y+dy/L*r}:{x:h.x,y:h.y+r};
 }
+function nearestTemptation(){ let best=null,bd=240; for(const s of spots){ if(s.used) continue; const d=Math.hypot(s.x-D.x,s.y-D.y); if(d<bd&&s.x>D.x-40){bd=d;best=s;} } return best; }
 
-/* ── 물리 ─── */
+/* ── 물리 ─── 앱의 WalkSim과 같은 규칙, 단위만 px. */
 function step(dt,inp){
   t+=dt; if(t>=WALK){ finish(); return; }
-  yankCool=Math.max(0,yankCool-dt); catchCool=Math.max(0,catchCool-dt); yankFlash=Math.max(0,yankFlash-dt*3); bloom=Math.max(0,bloom-dt*0.8);
-  gustT-=dt; if(gustT<=0){ gust=Math.random()<city.wind?1:0; gustT=(gust?1.2+Math.random()*1.5:3+Math.random()*5); if(gust&&city.wind>0.4&&intro.stage>=3) log('바람이 분다.'); }
-  if(inp.drop) toggleLeash();
-  grip+= (inp.g-grip)*Math.min(1,dt*12);
+  bloom=Math.max(0,bloom-dt*0.8); handlerStun=Math.max(0,handlerStun-dt); hitFlash=Math.max(0,hitFlash-dt*3);
+  gustT-=dt; if(gustT<=0){ gust=Math.random()<city.wind?1:0; gustT=(gust?1.2+Math.random()*1.5:3+Math.random()*5); }
+  focus+=(inp.f-focus)*Math.min(1,dt*10); holding=inp.hold;
+  let dT=0;
 
-  const sp=150;
-  V.x+=(inp.mx*sp-V.x)*Math.min(1,dt*10); V.y+=(inp.my*sp-V.y)*Math.min(1,dt*10);
-
-  let dRap=0;
+  // 개: 스틱 + 딴짓의 끌림
+  let wx=inp.mx*DOGSP*(dog.speed/150), wy=inp.my*DOGSP*(dog.speed/150);
+  if(holding){ wx=0; wy=0; }
   if(sniffTimer>0){
-    sniffTimer-=dt; DV.x*=0.85; DV.y*=0.85;
-    if(held && tension<0.25) dRap+=0.035*dt;
-    if(sniffTimer<=0 && target){
-      target.used=true; sniffCount++; log(dog.name+'이(가) '+target.k.line,'nice'); events.push(target.k.line); mood=Math.min(1,mood+0.12);
-      if(target.first && intro.stage<3){ intro.stage=3; dRap+=0.14; bloom=1; say('색이 돌아온다. 냄새 맡게 두면 이렇게 된다.',4200,true); }
-      target=null;
-    }
+    sniffTimer-=dt; wx=0; wy=0; mood=Math.min(1,mood+dt*0.08); dT-=0.025*dt;
+    if(sniffTimer<=0&&target){ target.used=true; stats.sniff++; log(target.k.line); events.push(target.k.line); target=null; }
   } else {
-    if(!target||target.used||Math.random()<dt*0.15) target=chooseTarget();
-    let wx=1,wy=-D.y*0.02, sp2=dog.speed*0.45;
-    if(target){
-      const dx=target.x-D.x, dy=target.y-D.y, dist=Math.hypot(dx,dy);
-      wx=dx/(dist||1); wy=dy/(dist||1); sp2=dog.speed*(target.k.moves?1.15:target.first?1.1:0.9);
-      const reachR=target.k.fly?target.k.r+dog.size+30:target.k.r+dog.size+4;
-      if(dist<reachR){
-        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.6); if(target.first&&intro.stage<2){ intro.stage=2; say('냄새를 맡는다. 가만히 두자.',2600,true); } }
-        else { target.used=true; log(dog.name+'이(가) '+target.k.line,'warn'); events.push(target.k.line); target=null; }
+    if(!target||target.used) target=nearestTemptation();
+    if(target&&!holding){
+      const dx=target.x-D.x, dy=target.y-D.y, dist=Math.hypot(dx,dy)||1;
+      const pull=target.k.pull[dog.id]*dog.curious*(1-focus)*55;
+      wx+=dx/dist*pull; wy+=dy/dist*pull;
+      if(dist<target.k.r+dog.size+10 && (Math.hypot(inp.mx,inp.my)<0.2||pull>90)){
+        if(target.k.sniff>0){ sniffTimer=target.k.sniff*(0.7+Math.random()*0.5); say(target.k.name+'. 냄새…  '+HANDLER.name+'가 기다린다.',0,intro>=2?'일하는 안내견은 낯선 사람이 부르거나 먹을 걸 줘도 반응하지 않도록 배운다.':null); }
+        else { target.used=true; target=null; }
       }
     }
-    if(Math.random()<dt*dog.rest*0.35 && sniffTimer<=0 && intro.stage>=3){ sniffTimer=1.0+Math.random()*1.5; if(dog.rest>1) log(dog.name+'이(가) 멈춰 섰다.'); }
-    DV.x+=(wx*sp2-DV.x)*Math.min(1,dt*4); DV.y+=(wy*sp2-DV.y)*Math.min(1,dt*4);
+    if(focus>0.5) mood=Math.max(0,mood-dt*0.004);
   }
+  DV.x+=(wx-DV.x)*Math.min(1,dt*9); DV.y+=(wy-DV.y)*Math.min(1,dt*9);
+  let nd={x:D.x+DV.x*dt,y:D.y+DV.y*dt};
+  for(const h of hazards){ if(!h.overhead) nd=pushOut(nd,h,dog.size*0.6); }
+  D=nd; D.y=Math.max(-78,Math.min(78,D.y));
+  const dsp=Math.hypot(DV.x,DV.y);
+  if(dsp>10){ heading.x+=(DV.x/dsp-heading.x)*Math.min(1,dt*6); heading.y+=(DV.y/dsp-heading.y)*Math.min(1,dt*6); const hl=Math.hypot(heading.x,heading.y)||1; heading.x/=hl; heading.y/=hl; }
 
+  // 사람: 하네스를 잡고 개의 오른쪽(차도 쪽) 반 발 뒤에서 따라온다. 보지 못한다.
+  const sxv=-heading.y, syv=heading.x;
+  const gx=D.x-heading.x*50+sxv*30, gy=D.y-heading.y*50+syv*30;
+  let pvx=(gx-P.x)*6, pvy=(gy-P.y)*6; const psp=Math.hypot(pvx,pvy); if(psp>HANDSP){ pvx*=HANDSP/psp; pvy*=HANDSP/psp; }
+  if(handlerStun>0){ pvx=0; pvy=0; }
+  PV.x+=(pvx-PV.x)*Math.min(1,dt*8); PV.y+=(pvy-PV.y)*Math.min(1,dt*8);
+  let np={x:P.x+PV.x*dt,y:P.y+PV.y*dt};
+  for(const h of hazards){
+    if(!h.hit && inside(np,h,18) && handlerStun<=0){
+      h.hit=true; handlerStun=0.8; PV={x:0,y:0}; np={x:P.x,y:P.y}; hitFlash=1; stats.hits++;
+      dT-=h.overhead?0.06:0.09; mood=Math.max(0,mood-0.05);
+      const first=intro<1; if(first) intro=1;
+      rumble(0.9,0.6,160); log(HANDLER.name+'가 '+HAZ[h.k].name+'에 부딪혔다.','warn'); events.push(HAZ[h.k].name+'에 부딪혔다.');
+      say(HAZ[h.k].name+'에 부딪혔다.'+(first?' 사람은 못 본다 — 당신이 돌아가야 한다.':''),0,HAZ[h.k].fact);
+    } else if(!h.hit && !h.passed && P.x>h.x+h.r+30){
+      h.passed=true; stats.passed++; dT+=0.02; if(intro<1){ intro=1; say(HAZ[h.k].name+'을 피해 지났다.'); }
+    }
+    if(!h.overhead) np=pushOut(np,h,13);
+  }
+  P=np; P.y=Math.max(-80,Math.min(80,P.y));
+
+  // 하네스: 개가 앞서 나가면 당겨진다. 사람이 못 따라오면 개가 느려진다.
   const dx=D.x-P.x, dy=D.y-P.y, dist=Math.hypot(dx,dy)||1, ux=dx/dist, uy=dy/dist;
   let ten=0;
-  if(held){
-    const over=dist-L0;
-    if(over>0){
-      const k=900*grip, damp=14*grip;
-      const relv=(DV.x-V.x)*ux+(DV.y-V.y)*uy;
-      const F=k*over+damp*Math.max(0,relv);
-      ten=Math.min(1,F/1400);
-      const mp=1.0, md=dog.mass;
-      DV.x-=ux*F/md*dt; DV.y-=uy*F/md*dt;
-      V.x +=ux*F/mp*dt*0.9; V.y+=uy*F/mp*dt*0.9;
-      if(dist>LMAX){ const c=(dist-LMAX); D.x-=ux*c*md/(md+mp); D.y-=uy*c*md/(md+mp); P.x+=ux*c*mp/(md+mp); P.y+=uy*c*mp/(md+mp); }
-      if(ten>0.3 && intro.stage<1){ intro.stage=1; say('당긴다! 트리거(Shift)를 풀어 따라가 보세요.',3200,true); rumble(0.6,0.4,120); }
-      if(ten>0.62 && yankCool<=0){
-        yankCool=0.9; yankFlash=1; mood=Math.max(0,mood-(0.10+0.12*grip));
-        dRap-=0.06+0.06*grip;
-        rumble(0.9,0.5,140);
-        if(target && !target.used && intro.stage>=3){ log('줄을 확 당겼다. '+dog.name+'이(가) 가고 싶었던 건 '+target.k.name+'.','warn'); events.push('줄을 확 당겨 '+target.k.name+'을(를) 못 보게 했다.'); }
-        if(dog.mass>2 && grip>0.85) say('세게 잡을수록 더 당긴다.');
-      } else if(ten>0.25 && !reduced) rumble(0.15*ten,0.35*ten,60);
-      if(target && !target.used){ wantFor+=dt; if(wantFor>2.2){ mood=Math.max(0,mood-dt*0.06); dRap-=0.03*dt; } }
-    } else { wantFor=Math.max(0,wantFor-dt*2); }
-    const pm=Math.hypot(V.x,V.y)>40, dm=Math.hypot(DV.x,DV.y)>40;
-    if(pm && dm && ten>0.03 && ten<0.3 && sniffTimer<=0) dRap+=0.02*dt;
-  } else {
-    if(dist>420) DV.x-=ux*40*dt;
-    dRap-=0.01*dt;
-  }
-  rapport=Math.max(0,Math.min(1,rapport+dRap));
-  rapShown+=(rapport-rapShown)*Math.min(1,dt*2.2);
+  if(dist>HREST){ ten=Math.min(1,(dist-HREST)/(HMAX-HREST)); if(dist>HMAX){ const c=dist-HMAX; D.x-=ux*c*0.85; D.y-=uy*c*0.85; P.x+=ux*c*0.15; P.y+=uy*c*0.15; } DV.x-=ux*ten*200*dt; DV.y-=uy*ten*200*dt; }
   tension+=(ten-tension)*Math.min(1,dt*10);
-  if(sniffTimer>0 && held && tension<0.2) mood=Math.min(1,mood+dt*0.05);
+  if(tension>0.25&&!reduced) rumble(0.12*tension,0.3*tension,60);
+  if(tension>0.7){ fastFor+=dt; if(fastFor>1.6){ fastFor=0; dT-=0.03; say('너무 빠르다. '+HANDLER.name+'의 걸음에 맞춰라.'); } } else fastFor=Math.max(0,fastFor-dt);
+  if(dsp>50&&dsp<150&&tension<0.3&&sniffTimer<=0&&handlerStun<=0) dT+=0.008*dt;
+
+  // 횡단보도
+  for(const c of crossings){ if(c.phase==='done') continue;
+    c.cycle+=dt; if(c.cycle>=19) c.cycle=0;
+    c.spawnT-=dt; if(c.cycle<8&&c.spawnT<=0){ c.spawnT=1.4+Math.random()*1.2; cars.push({x:c.x0+(Math.random()<0.5?160:440),y:-900,v:500+Math.random()*200}); }
+    const danger=cars.some(k=>k.x>c.x0&&k.x<c.x1&&k.y>-850&&k.y<160);
+    const atCurb=D.x>c.x0-75&&D.x<c.x0+5, onRoad=D.x>c.x0+5&&D.x<c.x1;
+    if(c.phase==='approach'){
+      if(atCurb&&(dsp<8||holding)) c.still+=dt; else c.still=0;
+      if(c.still>0.6){ c.phase='stopped'; c.since=0; const first=intro<2; if(first){ intro=2; bloom=0.6; } dT+=0.05; stats.curb++; rumble(0.4,0.3,100); log('연석 앞에서 멈췄다.','nice'); say('멈췄다. '+HANDLER.name+'의 발이 연석을 찾는다.',0,first?'점자블록이 없는 횡단보도에선 개의 멈춤이 유일한 신호다. 점자블록 적정 설치율 4%.':null); }
+      else if(onRoad){ c.phase='commanded'; dT-=0.1; log('멈추지 않고 차도에 들어갔다.','warn'); say('연석을 알리지 않았다.',0,HANDLER.name+'는 지금 자기가 차도에 있는 줄 모른다.'); }
+    } else if(c.phase==='stopped'){
+      c.since+=dt; if(c.since>1.4){ c.phase='commanded'; say('“앞으로.”  — 차가 오면 가지 마라. 명령보다 안전이 먼저다.',3600); }
+    } else if(c.phase==='commanded'){
+      if(onRoad||D.x>=c.x1) c.phase='crossing';
+      else if(danger){ c.refused+=dt; if(c.refused>1.0&&!c.disobeyed){ c.disobeyed=true; dT+=0.12; stats.disobey++; log('“앞으로”를 거부했다. 차가 지나갔다.','nice'); events.push('차 앞에서 “앞으로”를 거부했다.'); say('거부했다. 차가 지나갔다.',0,'지적 불복종 — 안내견이 배우는 마지막이자 가장 중요한 기술.'); } }
+    } else if(c.phase==='crossing'){
+      if(D.x>=c.x1){ c.phase='done'; const first=intro<3; if(first){ intro=3; bloom=1; } dT+=0.08; stats.crossed++; log('건넜다.','nice'); say('건넜다.',0,first?'색이 돌아온다. '+HANDLER.name+'에게 이 길은 이제 당신만큼 보인다.':null); }
+    }
+    if((c.phase==='crossing'||c.phase==='commanded')&&onRoad&&danger){
+      D={x:c.x0-90,y:D.y}; P={x:D.x-55,y:D.y+30}; DV={x:0,y:0}; PV={x:0,y:0}; handlerStun=1.0;
+      c.phase='commanded'; c.refused=0; dT-=0.1; mood=Math.max(0,mood-0.15); stats.danger++; hitFlash=1; rumble(1,0.9,300);
+      log('차. 물러섰다.','warn'); events.push('차 앞으로 들어갔다.'); say('차! 물러섰다.',0,HANDLER.name+'는 차를 못 봤다. 음향신호기는 없다 — 신호등 횡단보도 셋 중 둘이 그렇다.');
+    }
+  }
+  for(const k of cars) k.y+=k.v*dt; cars=cars.filter(k=>k.y<900);
+
+  // 딴짓거리 움직임
+  for(const s of spots){ if(s.k.moves&&!s.used){ s.ph+=dt; s.x+=s.vx*dt; if(s.k.fly){ s.y=-60+Math.sin(s.ph*1.4)*10; if(Math.hypot(s.x-D.x,s.y-D.y)<90) s.x+=Math.sign(s.x-D.x||1)*140*dt; } else { s.y+=Math.sin(s.ph*2)*15*dt; s.y=Math.max(-72,Math.min(72,s.y)); if(Math.hypot(s.x-D.x,s.y-D.y)<70&&s.k.k==='cat'){ s.x+=Math.sign(s.x-D.x)*120*dt; } } } }
+
+  trust=Math.max(0,Math.min(1,trust+dT)); trustShown+=(trust-trustShown)*Math.min(1,dt*2.2);
   mood=Math.max(0,Math.min(1,mood));
-
-  P.x+=V.x*dt; P.y+=V.y*dt; D.x+=DV.x*dt; D.y+=DV.y*dt;
-  P.y=Math.max(-70,Math.min(70,P.y)); D.y=Math.max(-78,Math.min(78,D.y));
-  for(const s of spots){ if(s.k.moves&&!s.used){ s.ph+=dt; s.x+=s.vx*dt; if(s.k.fly){ s.y=-58+Math.sin(s.ph*1.4)*12; if(Math.hypot(s.x-D.x,s.y-D.y)<90) s.x+=Math.sign(s.x-D.x||1)*140*dt; } else { s.y+=Math.sin(s.ph*2)*18*dt; s.y=Math.max(-70,Math.min(70,s.y)); if(Math.hypot(s.x-D.x,s.y-D.y)<70&&s.k.k==='cat'){ s.x+=Math.sign(s.x-D.x)*120*dt; } } } }
-
-  if(!held && !dropPromptShown && dist<40){ dropPromptShown=true; say('가까이 왔다. B/X로 잡으세요.'); }
-  if(!held && dist>=40) dropPromptShown=false;
-
   camX += ((P.x+D.x)/2-camX-W*0.42)*Math.min(1,dt*3);
   noteTimer-=dt; if(noteTimer<0) noteEl.style.opacity=0;
 }
 
 function finish(){
-  running=false; saveRap(dog.id,rapport); renderDogs();
-  const yanks=events.filter(e=>e.startsWith('줄을 확')).length;
-  const nice=events.filter(e=>!e.startsWith('줄을 확'));
-  endTitle.textContent=city.short+', '+dog.name+'와(과)의 산책';
+  running=false; saveTrust(dog.id,trust); renderDogs();
+  endTitle.textContent=city.short+', '+dog.name+'와 '+HANDLER.name+'의 산책';
   try{ endPic.src=cv.toDataURL('image/png'); }catch(e){}
-  endPct.textContent='색이 돌아온 정도 '+Math.round(rapport*100)+'%';
+  endPct.textContent='신뢰 '+Math.round(trust*100)+'% — 색이 돌아온 만큼';
   const lines=[];
-  if(nice.length) lines.push(nice.slice(-3).map(s=>dog.name+'이(가) '+s));
-  lines.push(yanks===0?'한 번도 확 당기지 않았다. '+dog.name+'이(가) 편히 걸었다.'
-           : yanks<3?'줄을 '+yanks+'번 확 당겼다. 그래도 대체로 괜찮은 산책이었다.'
-           : '줄을 '+yanks+'번 확 당겼다. '+dog.name+'은(는) 가고 싶은 데가 많았다.');
+  lines.push(stats.hits===0?HANDLER.name+'는 한 번도 부딪히지 않았다.':HANDLER.name+'가 '+stats.hits+'번 부딪혔다. '+(stats.passed>stats.hits?'그래도 대부분은 돌아갔다.':'당신이 먼저 봐야 했다.'));
+  if(stats.curb) lines.push('연석 앞에서 '+stats.curb+'번 멈췄다.'+(stats.disobey?' 차 앞에서 “앞으로”를 '+stats.disobey+'번 거부했다.':''));
+  else lines.push('연석 앞에서 한 번도 멈추지 않았다. '+HANDLER.name+'의 발은 연석을 찾지 못했다.');
+  if(stats.danger) lines.push('차 앞으로 '+stats.danger+'번 들어갔다. '+HANDLER.name+'는 그걸 몰랐다.');
+  if(stats.sniff) lines.push('냄새를 '+stats.sniff+'번 맡았다. '+HANDLER.name+'가 기다렸다.');
   lines.push(mood>0.7?'집에 돌아올 때 꼬리가 올라가 있었다.':mood>0.4?'집에 돌아올 때 그냥 걸었다.':'집에 돌아올 때 꼬리가 내려가 있었다.');
-  endLines.innerHTML=lines.flat().map(s=>'<div>'+s+'</div>').join('');
+  endLines.innerHTML=lines.map(s=>'<div>'+s+'</div>').join('');
   endEl.classList.add('show');
 }
 
@@ -497,11 +515,10 @@ function scene(g,color){
   const pal=city.pal;
   const C=(bw,co)=>color?co:bw;
   const ink=w=>{ g.strokeStyle=INK.ink; g.lineWidth=w; g.lineJoin='round'; g.lineCap='round'; };
-  const shadeOf=base=>color?mix(base,'#000000',0.18):INK.grey;                 // 그늘 면: 회색 한 톤
+  const shadeOf=base=>color?mix(base,'#000000',0.18):INK.grey;
   const shadow=(x,y,rx,ry)=>{ g.fillStyle=color?'rgba(0,0,0,.16)':INK.grey; g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.fill(); };
   const toneClip=(path,side)=>{ if(color) return; g.save(); path(); g.clip(); g.fillStyle=tone; g.fillRect(side.x,side.y,side.w,side.h); g.restore(); };
   const box=(x,y,w,h,fill,lw)=>{ g.fillStyle=fill; g.fillRect(x,y,w,h); ink(lw||INK.lineBg); g.strokeRect(x,y,w,h); };
-  // 둥근 형태 + 오른쪽 아래 납작한 그늘 면 + 외곽선
   const blob=(x,y,rx,ry,base,lw)=>{
     g.fillStyle=base; g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.fill();
     g.save(); g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.clip();
@@ -511,12 +528,10 @@ function scene(g,color){
     ink(lw||INK.lineBg); g.beginPath(); g.ellipse(x,y,rx,ry,0,0,6.28); g.stroke();
   };
 
-  // 종이와 하늘
   g.fillStyle=C(INK.paper,'#FFFDF6'); g.fillRect(0,0,W,H);
   g.fillStyle=C(pal.skyBW,pal.sky); g.fillRect(0,0,W,H*0.36);
-  if(!color){ g.save(); g.beginPath(); g.rect(0,0,W,H*0.12); g.clip(); g.globalAlpha=0.35; g.fillStyle=tone; g.fillRect(0,0,W,H*0.12); g.restore(); g.globalAlpha=1; } // 하늘 윗부분만 옅은 톤
+  if(!color){ g.save(); g.beginPath(); g.rect(0,0,W,H*0.12); g.clip(); g.globalAlpha=0.35; g.fillStyle=tone; g.fillRect(0,0,W,H*0.12); g.restore(); g.globalAlpha=1; }
 
-  // 지평선: 바다 또는 언덕
   if(city.horizon==='sea'){
     g.fillStyle=C('#E4E4DF',pal.far); g.fillRect(0,H*0.19,W,H*0.17);
     ink(INK.lineBg); g.beginPath(); g.moveTo(0,H*0.19); g.lineTo(W,H*0.19); g.stroke();
@@ -528,7 +543,6 @@ function scene(g,color){
     g.fillStyle=C(INK.grey,mix(pal.far,'#000000',0.18)); g.beginPath(); g.moveTo(0,H*0.36); for(let x=0;x<=W;x+=20){ const xx=x+camX*0.12+400; g.lineTo(x,H*0.34-Math.sin(xx*0.008)*H*0.04); } g.lineTo(W,H*0.36); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke();
   }
 
-  // 건물 양식 — 톤은 옆면에만
   if(city.style==='seaside'){
     for(let x=-((camX*0.35)%150)-150;x<W;x+=150){
       const bx=x,by=H*0.22,bw=104,bh=H*0.14;
@@ -545,7 +559,7 @@ function scene(g,color){
     for(let x=-((camX*0.35)%160)-160;x<W;x+=160){
       const bx=x,by=H*0.24,bw=118,bh=H*0.12;
       box(bx,by,bw,bh,C(pal.wallBW,pal.wall));
-      if(!color) toneClip(()=>{g.beginPath(); g.rect(bx,by,bw,bh*0.28);},{x:bx,y:by,w:bw,h:bh}); // 처마 밑 그늘
+      if(!color) toneClip(()=>{g.beginPath(); g.rect(bx,by,bw,bh*0.28);},{x:bx,y:by,w:bw,h:bh});
       g.fillStyle=C(INK.ink,'#8B5E3C'); g.fillRect(bx+10,by,6,bh); g.fillRect(bx+bw-16,by,6,bh);
       g.fillStyle=C(INK.ink,pal.roof); g.beginPath(); g.moveTo(bx-14,by-4); g.quadraticCurveTo(bx+bw*0.5,by-H*0.075,bx+bw+14,by-4); g.lineTo(bx+bw+8,by+2); g.quadraticCurveTo(bx+bw*0.5,by-H*0.04,bx-8,by+2); g.closePath(); g.fill(); ink(INK.lineBg); g.stroke();
       g.strokeStyle=C('#fff','#9A9A96'); g.lineWidth=1.2; for(let i=0;i<8;i++){ const xx=bx+2+i*15; g.beginPath(); g.moveTo(xx,by-2); g.quadraticCurveTo(xx+2,by-H*0.03,xx+4,by-H*0.05); g.stroke(); }
@@ -564,32 +578,47 @@ function scene(g,color){
   if(city.style==='seaside'){ g.strokeStyle=C('#fff','#F2D66B'); g.lineWidth=2; g.setLineDash([26,22]); g.beginPath(); g.moveTo(-((camX)%48),H*0.95); g.lineTo(W,H*0.95); g.stroke(); g.setLineDash([]); }
   else { g.strokeStyle=C('#fff','#8A7A66'); g.lineWidth=1.4; for(let x=-((camX)%34);x<W;x+=34){ g.beginPath(); g.moveTo(x,H*0.86+2); g.lineTo(x-6,H); g.stroke(); } }
 
+  // 횡단보도: 골목 차도가 인도를 끊는다. 흰 줄만 있고 음향신호기는 없다.
+  for(const c of crossings){
+    const x0=sx(c.x0), x1=sx(c.x1); if(x1<-20||x0>W+20) continue;
+    g.fillStyle=C('#6B6B69',pal.roadA); g.fillRect(x0,H*0.2,x1-x0,H);
+    ink(INK.lineBg); g.beginPath(); g.moveTo(x0,H*0.2); g.lineTo(x0,H); g.moveTo(x1,H*0.2); g.lineTo(x1,H); g.stroke();
+    g.fillStyle=INK.paper; for(let x=x0+45;x<x1-30;x+=90) g.fillRect(x,H*0.36+6,42,H*0.5-12);
+    g.fillStyle=C('#fff',pal.roadB); g.fillRect(x0+2,H*0.86+2,x1-x0-4,H);
+  }
+
   if(gust&&!reduced){ ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); for(let i=0;i<4;i++){ const yy=H*0.4+i*H*0.11, xx=((t*260+i*170)%(W+160))-80; g.beginPath(); g.moveTo(xx,yy); g.quadraticCurveTo(xx+22,yy-4,xx+48,yy); g.stroke(); } }
 
-  // 그 동네의 것들
   for(const s of spots){
     const x=sx(s.x); if(x<-60||x>W+60) continue;
     const y=sy(s.y); const k=s.k;
     g.globalAlpha=s.used?0.45:1;
     drawSpot(g,k.k,x,y,k,{C,ink,blob,shadow,box,shadeOf,s});
     g.globalAlpha=1;
-    if(!s.used && target===s && sniffTimer<=0 && held){ ink(1.5); g.strokeStyle=C(INK.ink,INK.leash); g.setLineDash([3,4]); g.beginPath(); g.arc(x,y,k.r+10+Math.sin(t*6)*2,0,6.28); g.stroke(); g.setLineDash([]); }
+    if(!s.used && target===s && sniffTimer<=0 && focus<0.5){ ink(1.5); g.strokeStyle=C(INK.ink,INK.leash); g.setLineDash([3,4]); g.beginPath(); g.arc(x,y,k.r+10+Math.sin(t*6)*2,0,6.28); g.stroke(); g.setLineDash([]); }
+  }
+  for(const h of hazards){
+    const x=sx(h.x); if(x<-120||x>W+120) continue;
+    g.globalAlpha=h.hit?0.55:1; drawHazard(g,h,x,sy(h.y),{C,ink,blob,shadow,box}); g.globalAlpha=1;
+  }
+  // 달리는 차 — 건물 쪽에서 차도 쪽으로
+  for(const k of cars){
+    const x=sx(k.x), y=sy(k.y); if(x<-80||x>W+80||y<-120||y>H+120) continue;
+    shadow(x,y+22,38,10);
+    g.fillStyle=C('#fff','#D9DDE2'); g.beginPath(); g.roundRect(x-36,y-40,72,80,12); g.fill(); ink(INK.lineBg); g.stroke();
+    g.fillStyle=C(INK.grey,'#B5C6D2'); g.beginPath(); g.roundRect(x-30,y-30,60,34,9); g.fill(); ink(INK.lineIn); g.stroke();
+    g.fillStyle=INK.ink; g.fillRect(x-40,y-28,6,16); g.fillRect(x+34,y-28,6,16); g.fillRect(x-40,y+14,6,16); g.fillRect(x+34,y+14,6,16);
   }
 
   const px=sx(P.x),py=sy(P.y),dx=sx(D.x),dy=sy(D.y);
   shadow(px,py+31,15,4.5);
   shadow(dx,dy+dog.size*0.72,dog.size*1.25,dog.size*0.34);
 
-  // 줄 — 가장 굵고 가장 검다
-  if(held){
-    const dist=Math.hypot(dx-px,dy-py), slack=Math.max(0,L0-dist);
-    const mx=(px+dx)/2, my=(py+dy)/2+slack*0.55+6;
-    ink(INK.lineChar+tension*3); g.strokeStyle=C(INK.ink,INK.leash);
-    g.beginPath(); g.moveTo(px+9,py-12); g.quadraticCurveTo(mx,my,dx+dog.size*0.4,dy-dog.size*0.15); g.stroke();
-    if(tension>0.5 && !reduced){ ink(1.4); const n=(dx-px)/dist, m=(dy-py)/dist;
-      for(let i=1;i<=3;i++){ const q=0.3+i*0.15, qx=px+(dx-px)*q, qy=py+(dy-py)*q, o=4+tension*3;
-        g.beginPath(); g.moveTo(qx-m*o,qy+n*o); g.lineTo(qx-m*o*1.9,qy+n*o*1.9); g.moveTo(qx+m*o,qy-n*o); g.lineTo(qx+m*o*1.9,qy-n*o*1.9); g.stroke(); } }
-  }
+  // 하네스 — 단단한 손잡이. 당겨지면 굵고 곧다.
+  { const hx=px+9, hy=py-12, bx=dx+dog.size*0.2, by=dy-dog.size*0.55;
+    ink(INK.lineChar+tension*2.5); g.strokeStyle=C(INK.ink,INK.leash);
+    g.beginPath(); g.moveTo(hx,hy); g.lineTo(bx,by); g.stroke();
+    g.beginPath(); g.moveTo(bx-dog.size*0.5,by+2); g.lineTo(bx+dog.size*0.6,by+2); g.stroke(); }
 
   drawDog(g,dx,dy,C,ink,blob,shadeOf,color);
   drawWalker(g,px,py,C,ink,blob);
@@ -597,57 +626,65 @@ function scene(g,color){
   if(!color && bloom<=0){ const vg=g.createRadialGradient(W*0.5,H*0.5,H*0.55,W*0.5,H*0.5,W*0.8); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.10)'); g.fillStyle=vg; g.fillRect(0,0,W,H); }
 }
 
-/* ── 개: 머리:몸 1:1, 점 눈, 코 점, 뭉툭한 다리. 톤 없음. ─── */
+/* ── 개(나): 머리:몸 1:1, 점 눈, 코 점, 뭉툭한 다리. 톤 없음. ─── */
 function drawDog(g,dx,dy,C,ink,blob,shadeOf,color){
   const S=dog.size, base=C(dog.bw,dog.co), dark=isDark(base);
   const moving=Math.hypot(DV.x,DV.y)>20, leg=moving&&!reduced?Math.sin(t*13)*S*0.32:0;
-  const sniff=sniffTimer>0, wag=reduced?0:Math.sin(t*(sniff?15:8))*0.5;
-  const lean=held?Math.max(-1,Math.min(1,-tension*1.1)):0;                    // 당겨지면 몸이 뒤로
+  const sniff=sniffTimer>0, wag=reduced?0:Math.sin(t*(sniff?15:6))*0.5;
+  const lean=Math.max(-1,Math.min(1,-tension*1.1));
   const bob=moving&&!reduced?Math.abs(Math.sin(t*13))*S*0.08:0;
-  const hx=dx+S*0.72+lean*S*0.1, hy=dy-S*0.62-bob+(sniff?S*0.35:0);            // 머리 — 냄새 맡을 땐 내려간다
+  const hx=dx+S*0.72+lean*S*0.1, hy=dy-S*0.62-bob+(sniff?S*0.35:0);
   const R=S*0.66*INK.headRatio;
-  // 다리 4개 (뒤 2, 앞 2)
   ink(INK.lineChar); g.strokeStyle=INK.ink;
   const legs=[[-S*0.55,-1],[-S*0.3,1],[S*0.25,1],[S*0.5,-1]];
   for(const [ox,dir] of legs){ g.beginPath(); g.moveTo(dx+ox,dy+S*0.3); g.lineTo(dx+ox+dir*leg,dy+S*0.72); g.stroke(); }
-  // 꼬리
   ink(INK.lineChar); g.beginPath(); g.moveTo(dx-S*0.95,dy-S*0.05); g.quadraticCurveTo(dx-S*1.35,dy-S*0.55-wag*S*0.5,dx-S*1.2,dy-S*0.9-wag*S*0.4); g.stroke();
-  // 몸
   blob(dx,dy-bob,S*1.0,S*0.5,base,INK.lineChar);
-  if(dog.spots){ g.fillStyle=C(INK.ink,'#5A4636'); g.beginPath(); g.ellipse(dx-S*0.25,dy-S*0.08,S*0.3,S*0.2,0.3,0,6.28); g.fill(); }
-  // 귀 (머리 뒤에 먼저)
+  // 하네스 조끼 — 신뢰 20% 넘으면 흑백에서도 붉다
+  if(color||trustShown>0.2){ g.strokeStyle=INK.leash; g.lineWidth=INK.lineChar; g.beginPath(); g.moveTo(dx+S*0.2,dy-S*0.5-bob); g.lineTo(dx+S*0.2,dy+S*0.45-bob); g.stroke(); }
   g.fillStyle=dark?C('#3a3a38',mix(base,'#000',0.25)):C(INK.grey,mix(base,'#000',0.3));
-  if(dog.earDown){ g.beginPath(); g.ellipse(hx-R*0.55,hy+R*0.15,R*0.32,R*0.62,0.2,0,6.28); g.fill(); ink(INK.lineChar); g.stroke(); }
-  else { g.beginPath(); g.moveTo(hx-R*0.6,hy-R*0.3); g.lineTo(hx-R*0.45,hy-R*1.25); g.lineTo(hx-R*0.05,hy-R*0.75); g.closePath(); g.fill(); ink(INK.lineChar); g.stroke(); }
-  // 머리
+  g.beginPath(); g.ellipse(hx-R*0.55,hy+R*0.15,R*0.32,R*0.62,0.2,0,6.28); g.fill(); ink(INK.lineChar); g.stroke();
   blob(hx,hy,R,R*0.92,base,INK.lineChar);
-  // 주둥이 — 살짝 앞으로
   blob(hx+R*0.62,hy+R*0.22,R*0.42,R*0.32,base,INK.lineIn+0.5);
-  // 눈 하나(옆모습) — 점. 코 — 점.
   g.fillStyle=dark?'#fff':INK.ink; g.beginPath(); g.arc(hx+R*0.18,hy-R*0.12,S*INK.eye,0,6.28); g.fill();
   g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*1.0,hy+R*0.1,S*INK.eye*0.95,0,6.28); g.fill();
   if(sniff&&!reduced){ ink(1.4); g.strokeStyle=C('#8a8a86','#9FB4C4'); const w=Math.sin(t*9)*2; g.beginPath(); g.moveTo(hx+R*1.15,hy+R*0.35); g.quadraticCurveTo(hx+R*1.4+w,hy+R*0.55,hx+R*1.3,hy+R*0.9); g.stroke(); }
-  // 목줄 — 합 20% 넘으면 흑백에서도 붉다
-  if(color||rapShown>0.2){ g.strokeStyle=INK.leash; g.lineWidth=INK.lineChar; g.beginPath(); g.arc(hx-R*0.05,hy+R*0.55,R*0.55,-0.35,1.35); g.stroke(); }
-  if(yankFlash>0){ ink(2.2); g.strokeStyle=INK.ink; g.globalAlpha=yankFlash; for(let i=0;i<3;i++){ const a=-1.1+i*0.45; g.beginPath(); g.moveTo(hx+R*0.9+Math.cos(a)*R*0.9,hy-R*0.7+Math.sin(a)*R*0.9); g.lineTo(hx+R*0.9+Math.cos(a)*R*1.6,hy-R*0.7+Math.sin(a)*R*1.6); g.stroke(); } g.globalAlpha=1; }
-  if(!held){ g.font='700 15px Gaegu'; g.fillStyle=INK.ink; g.textAlign='center'; g.fillText('풀렸다!',dx,dy-S-22); }
+  if(holding){ g.font='700 14px Gaegu'; g.fillStyle=INK.ink; g.textAlign='center'; g.fillText('멈춤',dx,dy-S-20); }
 }
 
-/* ── 사람: 큰 둥근 머리, 작은 몸, 점 눈. 톤 없음. ─── */
+/* ── 지우: 큰 둥근 머리, 작은 몸, 점 눈. 오른손은 하네스. 톤 없음. ─── */
 function drawWalker(g,px,py,C,ink,blob){
-  const lean=held?(-tension*12):0, walking=Math.hypot(V.x,V.y)>15, lg=walking&&!reduced?Math.sin(t*11)*5:0;
+  const lean=-tension*10, walking=Math.hypot(PV.x,PV.y)>15, lg=walking&&!reduced?Math.sin(t*11)*5:0;
   const bob=walking&&!reduced?Math.abs(Math.sin(t*11))*1.2:0;
   const R=13, bx=px+lean*0.25, by=py-bob;
   ink(INK.lineChar); g.strokeStyle=INK.ink;
   g.beginPath(); g.moveTo(bx-3,by+12); g.lineTo(bx-3-lg,by+27); g.moveTo(bx+3,by+12); g.lineTo(bx+3+lg,by+27); g.stroke();
-  blob(bx,by+2,8,12,C('#fff','#3F5A8A'),INK.lineChar);                          // 작은 몸
-  ink(INK.lineChar); g.beginPath(); g.moveTo(bx+5,by-2); g.lineTo(bx+9,by-12); g.stroke(); // 팔
+  blob(bx,by+2,8,12,C('#fff','#3F5A8A'),INK.lineChar);
+  ink(INK.lineChar); g.beginPath(); g.moveTo(bx+5,by-2); g.lineTo(bx+9,by-12); g.stroke();
   const hx=bx+lean*0.4, hy=by-19;
-  blob(hx,hy,R,R*0.96,C('#fff','#F2CDA8'),INK.lineChar);                         // 큰 머리
-  g.fillStyle=C(INK.ink,'#2B2118'); g.beginPath(); g.arc(hx,hy-2,R,Math.PI*1.05,Math.PI*1.95); g.lineTo(hx+R*0.9,hy-R*0.55); g.quadraticCurveTo(hx,hy-R*0.45,hx-R*0.9,hy-R*0.55); g.closePath(); g.fill(); // 머리카락
-  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*0.35,hy+R*0.05,1.9,0,6.28); g.fill();   // 점 눈
-  g.fillStyle=C('#fff','#F2CDA8'); g.beginPath(); g.arc(hx+R*0.55,hy+R*0.35,2.2,0,6.28); g.fill(); ink(1.2); g.stroke(); // 볼
-  g.fillStyle=held?C(INK.ink,INK.leash):'#fff'; g.beginPath(); g.arc(bx+9,by-12,3+grip*2,0,6.28); g.fill(); ink(2); g.stroke(); // 손
+  blob(hx,hy,R,R*0.96,C('#fff','#F2CDA8'),INK.lineChar);
+  g.fillStyle=C(INK.ink,'#2B2118'); g.beginPath(); g.arc(hx,hy-1,R*1.02,Math.PI*0.98,Math.PI*2.02); g.lineTo(hx+R*0.98,hy+R*0.25); g.quadraticCurveTo(hx+R*0.15,hy+R*0.05,hx-R*0.98,hy+R*0.25); g.closePath(); g.fill();
+  g.fillStyle=INK.ink; g.beginPath(); g.arc(hx+R*0.35,hy+R*0.3,1.9,0,6.28); g.fill();
+  g.fillStyle=C('#fff','#F2CDA8'); g.beginPath(); g.arc(hx+R*0.55,hy+R*0.55,2.2,0,6.28); g.fill(); ink(1.2); g.stroke();
+  g.fillStyle=C(INK.ink,INK.leash); g.beginPath(); g.arc(bx+9,by-12,3.5,0,6.28); g.fill(); ink(2); g.stroke();
+  if(hitFlash>0){ ink(2.2); g.strokeStyle=INK.ink; g.globalAlpha=hitFlash; for(let i=0;i<3;i++){ const a=-1.3+i*0.5; g.beginPath(); g.moveTo(hx+Math.cos(a)*R*1.1,hy+Math.sin(a)*R*1.1); g.lineTo(hx+Math.cos(a)*R*1.8,hy+Math.sin(a)*R*1.8); g.stroke(); } g.globalAlpha=1; }
+}
+
+/* ── 장애물 ─── */
+function drawHazard(g,h,x,y,hh){
+  const {C,ink,blob,shadow,box}=hh;
+  const rr=(x,y,w,hgt,fill,r,lw)=>{ g.fillStyle=fill; g.beginPath(); g.roundRect(x,y,w,hgt,r); g.fill(); ink(lw||INK.lineBg); g.stroke(); };
+  switch(h.k){
+    case 'bollard': shadow(x,y+18,12,4); rr(x-6,y-26,12,44,C(INK.grey,'#8A8E96'),5); g.fillStyle=C(INK.ink,'#F2C94C'); g.fillRect(x-6.5,y-21,13,6); break;
+    case 'scooter': shadow(x,y+8,40,7); g.save(); g.translate(x,y); g.rotate(-0.1); rr(-42,-4,84,9,C(INK.grey,'#2E8B57'),3); g.restore();
+      ink(INK.lineBg+1); g.beginPath(); g.moveTo(x+38,y-2); g.lineTo(x+62,y-46); g.moveTo(x+52,y-46); g.lineTo(x+74,y-46); g.stroke();
+      for(const ox of [-36,36]){ g.fillStyle=C(INK.ink,'#3A3A38'); g.beginPath(); g.arc(x+ox,y+4,6,0,6.28); g.fill(); } break;
+    case 'car': shadow(x,y+20,90,12); rr(x-90,y-24,180,44,C('#fff','#E8E8E4'),10); rr(x-56,y-49,96,30,C(INK.grey,'#BFD3DE'),9);
+      for(const ox of [-58,58]){ g.fillStyle=C(INK.ink,'#2E2E2C'); g.beginPath(); g.arc(x+ox,y+16,13,0,6.28); g.fill(); ink(INK.lineIn); g.stroke(); } break;
+    case 'sign': ink(INK.lineBg+1); g.beginPath(); g.moveTo(x,y+20); g.lineTo(x,y-92); g.stroke(); rr(x-12,y-85,60,26,C(INK.ink,'#D8503A'),4); break;
+    case 'fence': shadow(x,y+18,50,8); ink(INK.lineBg+1); g.beginPath(); g.moveTo(x-40,y+16); g.lineTo(x-40,y-60); g.moveTo(x+40,y+16); g.lineTo(x+40,y-60); g.stroke();
+      rr(x-44,y-50,88,40,C('#fff','#F2C94C'),2); g.fillStyle=INK.ink; for(let i=0;i<3;i++){ g.save(); g.translate(x-28+i*28,y-30); g.rotate(0.5); g.fillRect(-4,-20,8,40); g.restore(); } break;
+  }
 }
 
 /* ── 그 동네의 것들. 새 종류는 case를 더한다. 소품에도 톤 없음. ─── */
@@ -738,7 +775,7 @@ function drawSpot(g,kind,x,y,k,h){
 function draw(){
   if(W<2||H<2||off.width<2) return;            // 아직 레이아웃이 없으면 그리지 않는다
   scene(ctx,false);
-  const r=Math.max(rapShown, bloom*0.28);
+  const r=Math.max(trustShown, bloom*0.28);
   if(r>0.02){
     scene(octx,true);
     const dx=sx(D.x), dy=sy(D.y);
@@ -751,7 +788,7 @@ function draw(){
     mctx.globalCompositeOperation='source-over';
     ctx.drawImage(msk,0,0,msk.width,msk.height,0,0,W,H);
   }
-  bMood.style.width=(mood*100)+'%'; bTen.style.width=(tension*100)+'%'; bRap.style.width=(rapShown*100)+'%';
+  bMood.style.width=(mood*100)+'%'; bTen.style.width=(tension*100)+'%'; bRap.style.width=(trustShown*100)+'%';
   const rem=Math.max(0,WALK-t); vTime.textContent=Math.floor(rem/60)+':'+String(Math.floor(rem%60)).padStart(2,'0');
 }
 
@@ -766,8 +803,8 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 document.getElementById('again').onclick=()=>{ reset(); pickDog(dog.id); };
-window.addEventListener('gamepadconnected',()=>{ say('컨트롤러가 연결됐다. 트리거로 줄을 쥐세요.'); });
-window.addEventListener('beforeunload',()=>{ if(dog) saveRap(dog.id,rapport); });
+window.addEventListener('gamepadconnected',()=>{ say('컨트롤러가 연결됐다. 스틱은 당신, 트리거는 집중, B는 멈춤.'); });
+window.addEventListener('beforeunload',()=>{ if(dog) saveTrust(dog.id,trust); });
 (function(){
   let id=new URL(location.href).searchParams.get('city');
   if(!id){ try{ id=localStorage.getItem('drawn.city'); }catch(e){} }
@@ -778,8 +815,8 @@ requestAnimationFrame(loop);
 
 // 개발용: 시뮬레이션을 정해진 시간만큼 돌린다. 자가 플레이 밸런싱과 테스트에 쓴다.
 window.__drawn={
-  advance(seconds,inp){ const s=Object.assign({mx:0,my:0,g:0.45,drop:false},inp||{}); const n=Math.round(seconds*60); for(let i=0;i<n&&running;i++) step(1/60,s); draw(); return this.state(); },
-  state(){ return {t:+t.toFixed(2),rapport:+rapport.toFixed(3),tension:+tension.toFixed(3),mood:+mood.toFixed(3),intro:intro.stage,held,sniff:sniffCount,events:events.slice(),city:city.id,dog:dog.name,P:{x:+P.x.toFixed(1),y:+P.y.toFixed(1)},D:{x:+D.x.toFixed(1),y:+D.y.toFixed(1)}}; },
+  advance(seconds,inp){ const s=Object.assign({mx:0,my:0,f:0.27,hold:false},inp||{}); const n=Math.round(seconds*60); for(let i=0;i<n&&running;i++) step(1/60,s); draw(); return this.state(); },
+  state(){ return {t:+t.toFixed(2),trust:+trust.toFixed(3),tension:+tension.toFixed(3),mood:+mood.toFixed(3),intro,stats:{...stats},events:events.slice(),city:city.id,dog:dog.name,P:{x:+P.x.toFixed(1),y:+P.y.toFixed(1)},D:{x:+D.x.toFixed(1),y:+D.y.toFixed(1)},crossings:crossings.map(c=>c.phase),hazards:hazards.map(h=>({k:h.k,x:h.x,y:h.y,hit:h.hit,hy:h.half?h.half[1]:h.r})),cars:cars.map(k=>({x:k.x,y:k.y}))}; },
   city:pickCity, dog:pickDog, reset
 };
 })();
