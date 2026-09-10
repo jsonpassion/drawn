@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>끌림 — 놀아보기</title>
-<meta name="description" content="《끌림 / Drawn》 브라우저 프로토타입 — 우비 입은 지우와 강아지, 웅덩이·상자·색 방울, 점프하면 강아지도 뛴다.">
+<meta name="description" content="《끌림 / Drawn》 브라우저 프로토타입 — 2000년대 초 하굣길. 학교 운동장에서 문방구까지, 웅덩이·상자·백 원짜리.">
 <link rel="icon" href="../img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -24,7 +24,8 @@
   .bar .m{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2)}
   .bar .meter{width:120px;height:12px;border:2px solid var(--ink);border-radius:7px;overflow:hidden;background:#fff}
   .bar .meter i{display:block;height:100%;background:var(--red);width:0}
-  .bar .meter.blue i{background:#3A7BC8}
+  .bar .meter.blue i{background:#CBA83C}
+  .bar .chip{font-family:"Gaegu",cursive;font-weight:700;font-size:17px;border:2px solid var(--ink);border-radius:12px;padding:2px 10px;background:#fff}
   .help{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--g2);margin:10px 0 0}
   .note{position:absolute;left:50%;bottom:64px;transform:translateX(-50%);background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:8px 16px;font-family:"Gaegu",cursive;font-weight:700;font-size:20px;box-shadow:4px 4px 0 #111;white-space:nowrap;max-width:92%;pointer-events:none;opacity:0;transition:opacity .25s}
   .note small{display:block;font-family:"Gowun Dodum",sans-serif;font-weight:400;font-size:12.5px;color:var(--g1);text-align:center}
@@ -42,10 +43,11 @@
   <div class="frame">
     <canvas id="c" width="1280" height="720"></canvas>
     <div class="note" id="note"></div>
-    <div class="end" id="end"><h3 id="endTitle">도착. 비가 그친다.</h3><p id="endBody"></p><button class="btn" id="again">한 번 더</button></div>
+    <div class="end" id="end"><h3 id="endTitle">문방구 도착. 비가 그친다.</h3><p id="endBody"></p><button class="btn" id="again">한 번 더</button></div>
     <div class="bar">
+      <b id="mission" class="chip">•</b>
       <span class="m">마음</span><span class="meter"><i id="bond"></i></span>
-      <span class="m">색 방울</span><span class="meter blue"><i id="drops"></i></span><b id="dropsN">0/12</b>
+      <span class="m">백원</span><span class="meter blue"><i id="drops"></i></span><b id="dropsN">0/12</b>
       <span class="m">목적지</span><b id="dist">0m</b>
     </div>
   </div>
@@ -56,19 +58,28 @@
 // ── 세계: 앱과 같은 지도 (2m 타일)
 const MAP = [
 "########################################",
-"#.....w.......o........w...............#",
-"#..###..####..#####..####..#####..###..#",
-"#..###..####..#####..####..#####..###..#",
-"#.........w.........o.........w....D...#",
+"#......................................#",
+"#..####...####...####...####...####....#",
+"#..####...####...####...####...####....#",
+"#gggggggggggggggggggggggggggggggggggg..#",
+"#gggggggggggggggggggggggggggggggggggg..#",
+"#ggggggSgggggggggggggggggggggggggggggw.#",
+"#......................................#",
 "======+==================+==============",
 "======+==================+==============",
-"#....w..........o.........w............#",
-"#......####..#####..###.....####..###..#",
-"#..S...####..#####..###..w..####..###..#",
-"#..........w...o.........w......o......#",
+"#....w.........o..........w............#",
+"#..####..#####..###..#####..####..###..#",
+"#..####..#####..###..#####..####..###..#",
+"#........w.......o......w.....D....o...#",
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"];
 const T = 2, PPM = 40, COLS = MAP[0].length, ROWS = MAP.length, W = COLS * T, H = ROWS * T;
-const SHOPS = [["영도 횟집","#2F6F9F"],["해녀 이모네","#D8503A"],["깡깡이 카페","#7A5C3E"],["남항 약국","#3A8F5C"],["봉래 세탁","#4A7BC0"],["자갈치 어묵","#E0973A"],["흰여울 책방","#6D5AA8"],["태종대 빵집","#C8763C"],["청학 문방구","#2E8B57"],["영도 다방","#B8455A"]];
+const SHOPS = [["태극 오락실","#C0392B"],["영도 만화방","#6D5AA8"],["비디오 대여점","#3F5F8F"],["이모네 떡볶이","#E0562D"],["봉래 세탁소","#4A7BC0"],["자갈치 어묵","#E0973A"],["남항 방앗간","#C8763C"],["신신 이발관","#2F6F9F"],["영도 사진관","#4E6E8E"],["대성 철물점","#3A8F5C"]];
+const MISSIONS = [
+  {t:"심부름 · 백 원 여덟 개", b:"엄마가 두부 사 오래. 백 원짜리 좀 모아 보자.", n:8, kind:"coins"},
+  {t:"심부름 · 나란히 첨벙 세 번", b:"오늘은 젖어도 돼. 같이 첨벙해 보자.", n:3, kind:"together"},
+  {t:"심부름 · 열두 번 뛰기", b:"웅덩이 보이면 다 뛰어넘기. 열두 번!", n:12, kind:"jumps"},
+  {t:"심부름 · 백 원 다 줍기", b:"오늘은 뽑기 하는 날. 열두 개 다 줍자!", n:12, kind:"coins"}
+];
 const cell = (c, r) => (r < 0 || r >= ROWS || c < 0 || c >= COLS) ? '#' : MAP[r][c];
 const at = (x, y) => cell(Math.floor(x / T), Math.floor(y / T));
 const blocked = ch => ch === '#' || ch === '~', road = ch => ch === '=' || ch === '+';
@@ -82,7 +93,7 @@ const lanes = MAP.map((row, r) => row.includes('=') ? r : -1).filter(r => r >= 0
 
 // 건물 줄 → 가게
 const buildings = []; let k = 0;
-for (let r = 0; r < ROWS; r++) { let c = 0; while (c < COLS) { if (MAP[r][c] !== '#') { c++; continue; } let run = 1; while (c + run < COLS && MAP[r][c + run] === '#') run++; const south = cell(c, r + 1) !== '#'; const border = r === 0 || r === ROWS - 1 || c === 0 || c + run === COLS; let shop = null; if (south && !border) { shop = SHOPS[k % SHOPS.length]; k++; const d = find('D'); if (Math.floor(d[1] / T) === r + 1 && Math.floor(d[0] / T) >= c && Math.floor(d[0] / T) < c + run) shop = ["동삼 편의점", "#2E8B57"]; } buildings.push({ c, r, run, south, shop, v: (r * 7 + c * 3) % 5 }); c += run; } }
+for (let r = 0; r < ROWS; r++) { let c = 0; while (c < COLS) { if (MAP[r][c] !== '#') { c++; continue; } let run = 1; while (c + run < COLS && MAP[r][c + run] === '#') run++; const south = cell(c, r + 1) !== '#'; const border = r === 0 || r === ROWS - 1 || c === 0 || c + run === COLS; let shop = null; if (south && !border) { shop = SHOPS[k % SHOPS.length]; k++; const d = find('D'); if (Math.floor(d[1] / T) === r + 1 && Math.floor(d[0] / T) >= c && Math.floor(d[0] / T) < c + run) shop = ["영도 문방구", "#2E8B57"]; } buildings.push({ c, r, run, south, shop, v: (r * 7 + c * 3) % 5 }); c += run; } }
 
 // ── 상태
 const S = {};
@@ -94,16 +105,17 @@ function reset() {
   S.cars = []; S.cycle = Math.random() * 19; S.spawn = 1; S.busT = 12; S.done = false;
   S.sniff = 0; S.target = null; S.girlLand = -9; S.dogLand = -9; S.girlSplash = false; S.dogSplash = false; S.wasRoad = false; S.enterY = 0; S.crossed = false;
   S.jumps = 0; S.splashes = 0; S.together = 0; S.fx = []; S.bubble = null; S.log = [];
+  S.mission = MISSIONS[(parseInt(localStorage.getItem('drawn.walks') || '0', 10)) % MISSIONS.length]; S.missionDone = false;
   // 냄새·색 방울·행인
-  const free = []; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (MAP[r][c] === '.') { const x = c * T + 1, y = r * T + 1; if (Math.hypot(x - s[0], y - s[1]) > 4 && Math.hypot(x - d[0], y - d[1]) > 3) free.push([x, y]); }
+  const free = []; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (MAP[r][c] === '.' || MAP[r][c] === 'g') { const x = c * T + 1, y = r * T + 1; if (Math.hypot(x - s[0], y - s[1]) > 4 && Math.hypot(x - d[0], y - d[1]) > 3) free.push([x, y]); }
   free.sort(() => Math.random() - .5);
   const puddles = []; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (MAP[r][c] === 'w') puddles.push([c * T + 1, r * T + 1]);
   const near = p => Math.min(...puddles.map(q => Math.hypot(q[0] - p[0], q[1] - p[1])));
-  S.spots = free.slice(0, 10).map(p => ({ x: p[0] + (Math.random() - .5), y: p[1] + (Math.random() - .5), kind: ['전봇대', '어묵', '고양이', '가로수', '빵 냄새'][Math.floor(Math.random() * 5)], used: false }));
+  S.spots = free.slice(0, 10).map(p => ({ x: p[0] + (Math.random() - .5), y: p[1] + (Math.random() - .5), kind: ['군고구마', '붕어빵', '뽑기 기계', '오락기', '우체통', '평상', '고양이', '전봇대'][Math.floor(Math.random() * 8)], used: false }));
   const rest = free.slice(10).sort((a, b) => near(a) - near(b));
   S.drops = rest.slice(0, 12).map((p, i) => ({ x: p[0] + (Math.random() - .5), y: p[1] + (Math.random() - .5), hue: i / 12, taken: false, ph: Math.random() * 6 }));
   S.npcs = [[1, 3, 37, 'h'], [4, 3, 37, 's'], [7, 3, 37, 'h'], [10, 3, 37, 's']].map(([r, c0, c1, kind], i) => ({ x: c0 * T + Math.random() * (c1 - c0) * T, y: r * T + 1 + (i % 2 ? .4 : -.4), dir: Math.random() < .5 ? 1 : -1, sp: kind === 'h' ? .7 : 1.15, x0: c0 * T + .6, x1: c1 * T - .6, kind, ph: 0 }));
-  note('우비 입었다. 비 냄새. 오늘은 모험이다.', '가자, 보리! 첨벙첨벙.');
+  note('우비 입었다. 비 냄새. 가방 멘 지우 냄새.', S.mission.b);
 }
 
 // ── 입력
@@ -161,7 +173,7 @@ function step(dt) {
   face(d, dt);
   if (gap > 7) { S.far = (S.far || 0) + dt; if (S.far > 4) { const tp = trailPoint(1.5); d.x = tp[0]; d.y = tp[1]; d.vx = d.vy = 0; S.far = 0; } } else S.far = 0;
   // 색 방울
-  for (const dr of S.drops) if (!dr.taken && (Math.hypot(dr.x - g.x, dr.y - g.y) < .5 || Math.hypot(dr.x - d.x, dr.y - d.y) < .45)) { dr.taken = true; dB += .035; S.bloom = Math.max(S.bloom, .6); sparkle(dr.x, dr.y); const n = S.drops.filter(x => x.taken).length; if (n === 1) note('색 방울! 우비에 색이 묻는다.', '하나 찾았다. 더 있을 거야.'); else if (n === 12) note('색 방울 다 모았다! 우비가 무지개다.', '전부 찾았어.'); bubble('♥', '#E8562D'); }
+  for (const dr of S.drops) if (!dr.taken && (Math.hypot(dr.x - g.x, dr.y - g.y) < .5 || Math.hypot(dr.x - d.x, dr.y - d.y) < .45)) { dr.taken = true; dB += .035; S.bloom = Math.max(S.bloom, .6); sparkle(dr.x, dr.y); const n = S.drops.filter(x => x.taken).length; if (n === 1) note('백 원! 빗물에 씻겨 반짝인다.', '우와, 백 원. 이거 뽑기 한 번이야.'); else if (n === 12) note('천이백 원. 오늘 우리 부자다.', '열두 개! 뽑기랑 오락 다 되겠다.'); bubble('♥', '#E8562D'); }
   // 차
   S.cycle += dt; if (S.cycle >= 19) S.cycle = 0; const flowing = S.cycle < 8; S.spawn -= dt; S.busT -= dt;
   if (flowing && S.spawn <= 0) { S.spawn = 1.2 + Math.random() * 1.2; const li = Math.floor(Math.random() * lanes.length), dir = li % 2 === 0 ? -1 : 1, spd = 5 + Math.random() * 2; S.cars.push({ x: dir > 0 ? -3 : W + 3, y: lanes[li] * T + 1, dir, sp: spd, v: spd, bus: false }); }
@@ -180,7 +192,8 @@ function step(dt) {
   if (Math.hypot(g.x - S.dest[0], g.y - S.dest[1]) < 1.3 && gap < 3.5) finish();
 }
 function face(b, dt) { const s = Math.hypot(b.vx, b.vy); if (s > .25) b.fx = b.vx < -.2 ? -1 : b.vx > .2 ? 1 : b.fx; }
-function finish() { S.done = true; note('도착! 비가 그친다. 하늘에 색이.', '봐, 무지개.'); setTimeout(() => { document.getElementById('endTitle').textContent = '영도, 보리와 지우의 모험'; document.getElementById('endBody').innerHTML = `마음 ${Math.round(S.bond * 100)}% — 색이 번진 만큼<br>색 방울 ${S.drops.filter(x => x.taken).length}/12 · ${S.jumps}번 뛰고 ${S.splashes}번 첨벙 · 나란히 첨벙 ${S.together}번`; document.getElementById('end').classList.add('on'); }, 1800); }
+function finish() { S.done = true; note('문방구다! 비가 그친다.', '봐, 무지개. 뭐 살까?'); setTimeout(() => { try { localStorage.setItem('drawn.walks', String((parseInt(localStorage.getItem('drawn.walks')||'0',10))+1)); } catch(e){}
+    document.getElementById('endTitle').textContent = '영도, 보리와 지우의 하굣길'; document.getElementById('endBody').innerHTML = `마음 ${Math.round(S.bond * 100)}% — 색이 번진 만큼<br>${S.mission.t} — ${S.missionDone ? '해냈다' : '다음엔 꼭'}<br>백 원짜리 ${S.drops.filter(x => x.taken).length}개 · ${S.jumps}번 뛰고 ${S.splashes}번 첨벙 · 나란히 첨벙 ${S.together}번`; document.getElementById('end').classList.add('on'); }, 1800); }
 document.getElementById('again').onclick = () => { document.getElementById('end').classList.remove('on'); reset(); };
 
 // ── 연출
@@ -200,6 +213,7 @@ function drawWorld(c, camx, camy) {
     const ch = MAP[r][cc], px = cc * T * PPM, py = r * T * PPM, s = T * PPM;
     if (ch === '=' || ch === '+') { c.fillStyle = '#55595F'; c.fillRect(px, py, s, s); if (ch === '+') { c.fillStyle = '#FAFAF7'; for (let yy = py + 8; yy < py + s - 8; yy += 36) c.fillRect(px + 6, yy, s - 12, 18); } else if (r > 0 && road(cell(cc, r - 1))) { c.fillStyle = '#F2D66B'; for (let xx = px + 10; xx < px + s; xx += 54) c.fillRect(xx, py - 2, 30, 3); } c.strokeStyle = '#111'; c.lineWidth = 2; if (!road(cell(cc, r - 1))) { c.beginPath(); c.moveTo(px, py); c.lineTo(px + s, py); c.stroke(); } if (!road(cell(cc, r + 1))) { c.beginPath(); c.moveTo(px, py + s); c.lineTo(px + s, py + s); c.stroke(); } }
     else if (ch === '~') { c.fillStyle = '#BFE3F4'; c.fillRect(px, py, s, s); if (cell(cc, r - 1) !== '~') { c.strokeStyle = '#111'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(px, py); c.lineTo(px + s, py); c.stroke(); } c.strokeStyle = '#EAF6FB'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(px + 8, py + 40); c.quadraticCurveTo(px + 24, py + 32, px + 40, py + 40); c.quadraticCurveTo(px + 56, py + 48, px + 72, py + 40); c.stroke(); }
+    else if (ch === 'g') { c.fillStyle = '#E6D9C0'; c.fillRect(px, py, s, s); if (cell(cc, r - 1) !== 'g') { c.strokeStyle = '#D8CBB0'; c.lineWidth = 2; c.beginPath(); c.moveTo(px, py); c.lineTo(px + s, py); c.stroke(); } if (r % 3 === 1) { c.strokeStyle = '#fff'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(px, py + s / 2); c.lineTo(px + s, py + s / 2); c.stroke(); } }
     else if (ch !== '#') { c.strokeStyle = '#D8D2C4'; c.lineWidth = 1; c.beginPath(); c.moveTo(px, py + s / 2); c.lineTo(px + s, py + s / 2); c.moveTo(px + s / 2, py); c.lineTo(px + s / 2, py + s); c.stroke();
       if (ch === 'w') { c.fillStyle = '#BFDCEC'; c.strokeStyle = '#111'; c.lineWidth = 1.5; c.beginPath(); c.ellipse(px + s / 2, py + s / 2, s / 2 - 8, s / 2 - 18, 0, 0, 7); c.fill(); c.stroke(); c.strokeStyle = '#8FB8D2'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(px + s / 2, py + s / 2, 12, 5, 0, 0, 7); c.stroke(); }
       if (ch === 'o') { const hz = cell(cc - 1, r) !== '#' || cell(cc + 1, r) !== '#'; const cr = hz ? [px + s / 2 - 12, py + 7, 24, s - 14] : [px + 7, py + s / 2 - 12, s - 14, 24]; c.fillStyle = '#D2A86B'; c.strokeStyle = '#111'; c.lineWidth = 2; c.fillRect(...cr); c.strokeRect(...cr); c.strokeStyle = '#8A6A3C'; c.lineWidth = 1.2; for (let k = 1; k <= 3; k++) { c.beginPath(); if (hz) { c.moveTo(cr[0], cr[1] + cr[3] * k / 4); c.lineTo(cr[0] + cr[2], cr[1] + cr[3] * k / 4); } else { c.moveTo(cr[0] + cr[2] * k / 4, cr[1]); c.lineTo(cr[0] + cr[2] * k / 4, cr[1] + cr[3]); } c.stroke(); } }
@@ -213,7 +227,10 @@ function drawWorld(c, camx, camy) {
   // 그릴 것들 y정렬
   const items = [];
   for (const s of S.spots) items.push({ y: s.y, f: () => { c.globalAlpha = s.used ? .45 : 1; c.fillStyle = '#C9C9C4'; c.strokeStyle = '#111'; c.lineWidth = 1.5; c.beginPath(); c.arc(s.x * PPM, s.y * PPM - 8, 7, 0, 7); c.fill(); c.stroke(); c.fillStyle = '#111'; c.font = '10px sans-serif'; c.textAlign = 'center'; c.fillText(s.kind, s.x * PPM, s.y * PPM + 10); c.globalAlpha = 1; } });
-  for (const dr of S.drops) if (!dr.taken) items.push({ y: dr.y, f: () => { const bob = Math.sin(S.time * 2.4 + dr.ph) * 3; c.fillStyle = `hsl(${dr.hue * 360} 72% 60%)`; c.strokeStyle = '#111'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(dr.x * PPM, dr.y * PPM - 22 - bob); c.quadraticCurveTo(dr.x * PPM + 9, dr.y * PPM - 10 - bob, dr.x * PPM, dr.y * PPM - 2 - bob); c.quadraticCurveTo(dr.x * PPM - 9, dr.y * PPM - 10 - bob, dr.x * PPM, dr.y * PPM - 22 - bob); c.fill(); c.stroke(); c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.ellipse(dr.x * PPM, dr.y * PPM + 2, 6, 2.5, 0, 0, 7); c.fill(); } });
+  for (const dr of S.drops) if (!dr.taken) items.push({ y: dr.y, f: () => { const bob = Math.sin(S.time * 2.4 + dr.ph) * 3, spin = Math.abs(Math.cos(S.time * 1.6 + dr.ph)) * .7 + .3; const cx = dr.x * PPM, cy = dr.y * PPM - 13 - bob;
+    c.fillStyle = 'rgba(0,0,0,.18)'; c.beginPath(); c.ellipse(dr.x * PPM, dr.y * PPM + 2, 8, 3, 0, 0, 7); c.fill();
+    c.save(); c.translate(cx, cy); c.scale(spin, 1); c.fillStyle = '#CFCFC9'; c.strokeStyle = '#111'; c.lineWidth = 1.5; c.beginPath(); c.arc(0, 0, 10, 0, 7); c.fill(); c.stroke();
+    c.strokeStyle = '#8E8E88'; c.lineWidth = 1.2; c.beginPath(); c.arc(0, 0, 6.5, 0, 7); c.stroke(); c.fillStyle = '#8E8E88'; c.fillRect(-1.4, -4, 2.8, 8); c.restore(); } });
   for (const n of S.npcs) items.push({ y: n.y, f: () => person(c, n.x, n.y, 0, n.dir, n.kind === 'h' ? '#E8C9B8' : '#2B3A55', n.kind === 'h' ? '#BDBDB8' : '#111', n.ph, 26) });
   for (const car of S.cars) items.push({ y: car.y, f: () => { c.save(); c.translate(car.x * PPM, car.y * PPM); c.fillStyle = 'rgba(0,0,0,.22)'; c.beginPath(); c.ellipse(0, 6, car.bus ? 120 : 70, 26, 0, 0, 7); c.fill(); c.fillStyle = car.bus ? '#4E9A6B' : '#D9DDE2'; c.strokeStyle = '#111'; c.lineWidth = 2; const L = car.bus ? 232 : 150, Wd = car.bus ? 68 : 58; rr(c, -L / 2, -Wd / 2, L, Wd, 10); c.fill(); c.stroke(); c.fillStyle = car.bus ? '#DCE8DF' : '#B5C6D2'; rr(c, -L / 2 + 16, -Wd / 2 + 6, L - 32, Wd - 12, 8); c.fill(); c.stroke(); c.restore(); } });
   items.push({ y: S.dog.y, f: () => dog(c, S.dog) });
@@ -244,6 +261,10 @@ function frame(now) {
   const r = Math.max(S.bond, S.bloom * .28); const rad = r <= .02 ? 0 : (0.8 + 8 * r * r + S.bloom * .6) * PPM;
   if (rad > 0) { ctx.save(); ctx.beginPath(); const cx = ((g.x + d.x) / 2 - S.camx) * PPM + cv.width / 2, cy = ((g.y + d.y) / 2 - S.camy) * PPM + cv.height / 2; ctx.arc(cx, cy, rad, 0, 7); ctx.clip(); ctx.drawImage(off, 0, 0); ctx.restore(); }
   if (!S.done) drawRain(ctx, S.time);
+  const mv = S.mission.kind === 'coins' ? S.drops.filter(x => x.taken).length : S.mission.kind === 'jumps' ? S.jumps : S.together;
+  if (!S.missionDone && mv >= S.mission.n) { S.missionDone = true; note('심부름 끝!', '이제 문방구 가자.'); }
+  document.getElementById('mission').textContent = (S.missionDone ? '✓ ' : '• ') + S.mission.t + '  ' + Math.min(mv, S.mission.n) + '/' + S.mission.n;
+  document.getElementById('mission').style.background = S.missionDone ? '#F2E29E' : '#fff';
   document.getElementById('bond').style.width = Math.round(S.bond * 100) + '%';
   const n = S.drops.filter(x => x.taken).length; document.getElementById('drops').style.width = Math.round(n / 12 * 100) + '%'; document.getElementById('dropsN').textContent = n + '/12';
   document.getElementById('dist').textContent = Math.round(Math.hypot(g.x - S.dest[0], g.y - S.dest[1])) + 'm';
