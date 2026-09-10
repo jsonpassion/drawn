@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>끌림 기획서</title>
-<meta name="description" content="《끌림 / Drawn》 게임 기획서 v0.1 — 합과 색 회복, 개 6종, 미션, 날씨, 5주 스토리, 엔드게임, 이름.">
+<meta name="description" content="《끌림 / Drawn》 게임 기획서 v0.2 — 우비 입은 소녀와 강아지의 비 오는 날 모험. 점프, 웅덩이, 색 방울, 마음과 색.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23111'/><text x='50%' y='58%' font-size='34' text-anchor='middle' dominant-baseline='middle'>🐾</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -55,137 +55,122 @@
   <nav><a class="logo" href="../">끌림</a><span><a href="../">소개</a><a href="../play/">놀아보기</a></span></nav>
 
   <div class="cover">
-    <div class="stamp">기획<br>v0.1</div>
-    <div class="kicker">Game Design · 2026-09-09 · Mac 우선 · 싱글 · ADA 2027</div>
+    <div class="stamp">기획<br>v0.2</div>
+    <div class="kicker">Game Design · 2026-09-10 · Mac 우선 · 싱글 · ADA 2027</div>
     <h1>끌림</h1>
     <div class="en">Drawn</div>
-    <p class="one">당신은 개다. 지우는 하네스를 잡고 반 발 뒤에서 따라온다. 지우는 보지 못한다. 발을 맞출수록 흑백 골목에 색이 돌아온다.</p>
+    <p class="one">비 오는 날, 노란 우비의 지우와 우비 입은 강아지가 흑백으로 젖은 동네를 첨벙거리며 가게까지 간다. 둘이 같이 뛰고 첨벙거리고 색 방울을 주울수록 마음이 쌓이고, 동네에 색이 번진다.</p>
     <div class="strip">
-      <i style="background:#fff"></i><i style="background:#e6e6e2"></i><i style="background:#c9c9c4"></i><i style="background:#a0a09b"></i>
-      <i style="background:#9a9c8a"></i><i style="background:#a8b07a"></i><i style="background:#c9b56a"></i><i style="background:#e0a34a"></i><i style="background:#e8562d"></i>
+      <i style="background:#fff"></i><i style="background:#e6e6e2"></i><i style="background:#c9c9c4"></i><i style="background:#bfdcec"></i>
+      <i style="background:#9dc57a"></i><i style="background:#c9b56a"></i><i style="background:#f2c94c"></i><i style="background:#e0a34a"></i><i style="background:#e8562d"></i>
     </div>
-    <div class="lab"><span>신뢰 0 — 잉크와 종이</span><span>신뢰 100 — 색이 돌아온 골목</span></div>
+    <div class="lab"><span>마음 0 — 비에 젖은 잉크</span><span>마음 100 — 비가 그친 동네</span></div>
   </div>
 
   <h2>누구를 위한 게임인가</h2>
-  <p>겉은 <b>귀여운 개의 눈으로 걷는 산책 게임</b>입니다. 개를 고르고, 동네를 고르고, 냄새를 맡고, 색이 돌아오는 걸 봅니다. 시각장애에 관심이 없어도 됩니다 — 10초 뒤 킥보드에 지우의 발이 걸리는 순간, 게임이 스스로 말합니다. 지우는 보지 못한다고.</p>
-  <p>속은 <b>이해의 도구</b>입니다. 등록 시각장애인 25만 명, 그중 80%가 살다가 시력을 잃은 사람입니다. 그들이 매일 걷는 길에 뭐가 있는지, 안내견이 무엇을 대신하는지를 손가락으로 배웁니다. 설교는 없습니다. 부딪히면 자막 아래 사실 한 줄이 붙을 뿐입니다.</p>
-
-  <h2>톤 — 개의 일상툰</h2>
-  <p>시각장애 체험 게임으로 가면 진부합니다. 이 게임은 <b>일하는 개의 하루</b>입니다. 자막 첫 줄은 개의 속마음("어묵… 아니 일하는 중… 어묵…"), 둘째 줄은 지우의 말("너 지금 냄새 맡았지. 손잡이가 말해 줘."). 시각장애의 사실은 플레이 중엔 나오지 않고, 산책이 끝난 뒤 <b>지우의 일기</b> 세 줄에만 남습니다. 색이 돌아오는 건 실명의 은유가 아니라 우정입니다 — 지우가 나를 믿는 만큼 세상이 예뻐진다.</p>
-  <p class="dim">참고: 《마루는 강쥐》가 통하는 이유 — 기묘하게 귀여운 전제 한 줄, 개의 천진한 시선이 주는 위로, 개 습성이 남은 엉뚱함, 트레이드마크 표정. 보리의 시그니처(E 확정): 굵은 스티커 선, 큰 먹색 귀 하나가 냄새 앞에서 안테나처럼 서고, 큰 검정 코, 신뢰가 오르면 볼부터 색이 든다. 표정 6종 — 일하는 얼굴(무표정) · 킁킁(코 폭발) · 헤벌쭉 · 차!! · 뾰로통 · 자랑 — 은 사건이 정한다. 일하는 얼굴과 반응의 낙차가 웃음이다.</p>
+  <p><b>강아지를 키우고 싶지만 사정상 키우지 못하는 사람</b>을 위한 힐링 어드벤처입니다. 비 오는 날 우비를 입고 강아지와 동네를 쏘다니는 20분. 점프 하나, 부르기 하나. 실패가 없고, 색이 돌아오는 것만 남습니다.</p>
+  <p class="dim">참고: 《마루는 강쥐》가 통하는 이유 — 기묘하게 귀여운 전제 한 줄, 강아지의 천진한 시선이 주는 위로, 개 습성이 남은 엉뚱함, 트레이드마크 표정. 보리의 시그니처(E 확정): 굵은 스티커 선, 먹색 귀 하나, 큰 검은 코, 노란 우비의 귀 구멍으로 귀가 삐죽.</p>
 
   <h2>한 문장</h2>
-  <div class="rule">스틱은 개(나)를 움직이고, 사람은 하네스를 잡고 따라오고, 트리거가 집중, 버튼 하나가 멈춤이다.</div>
-  <p>플레이어는 사람을 조종하지 않습니다. 사람은 보지 못하므로 개가 멈추지 않으면 볼라드·킥보드·낮은 간판·연석·차에 부딪힙니다. 세 줄 규칙 — <b>개는 앞장선다 · 사람은 따라온다 · 멈춤이 말이다</b> — 위에서 개마다 다른 손맛이 나옵니다.</p>
+  <div class="rule">스틱은 지우, A는 점프, B는 부르기. 강아지는 자취를 따라오고 지우가 뛴 자리에서 같이 뛴다.</div>
+  <p>플레이어는 지우를 조종합니다. 강아지는 조종하지 않습니다 — 지우의 자취를 반 발 뒤에서 따라오고, 냄새에 잠깐 팔리고, 부르면 옵니다. 세 줄 규칙 — <b>지우가 걷는다 · 강아지가 따라온다 · 같이 뛰면 색이 든다.</b></p>
 
-  <h2>핵심 시스템 — 신뢰와 색</h2>
-  <p>세상은 잉크 카툰, 흑백입니다. 스타일이 아니라 <b>상태</b>입니다. 지우가 당신을 믿는 만큼 색이 돌아옵니다 — 지우에게 그 길이 그만큼 “보이게” 된 것입니다.</p>
+  <h2>핵심 시스템 — 마음과 색</h2>
+  <p>세상은 잉크 카툰, 비에 젖어 흑백입니다. 스타일이 아니라 <b>상태</b>입니다. 둘이 함께 논 만큼 색이 번집니다 — 반경의 중심은 둘 사이입니다.</p>
   <div class="tw"><table>
-    <tr><th>신뢰</th><th>화면</th><th>손</th></tr>
-    <tr><td>0–20</td><td>완전한 흑백. 종이와 잉크.</td><td>하네스가 자주 당겨진다. 진동이 거칠다.</td></tr>
-    <tr><td>20–45</td><td>하네스와 지금 멈춘 연석에만 색이 든다.</td><td>부딪히는 횟수가 줄어든다.</td></tr>
-    <tr><td>45–75</td><td>개 주변으로 색이 번진다. 가로수·포장마차·기와.</td><td>지우가 “잘했어”라고 한다. 걸음이 맞는다.</td></tr>
-    <tr><td>75–100</td><td>골목 전체. 잉크선은 남고 색이 찬다.</td><td>“앞으로”를 거부해도 지우가 기다린다.</td></tr>
+    <tr><th>마음</th><th>화면</th><th>손</th></tr>
+    <tr><td>0–20</td><td>완전한 흑백. 종이와 잉크, 노란 우비 둘.</td><td>첫 웅덩이. 첫 첨벙에 진동이 온다.</td></tr>
+    <tr><td>20–45</td><td>둘 사이 웅덩이에만 하늘색이 든다.</td><td>강아지가 따라 뛰기 시작한다.</td></tr>
+    <tr><td>45–75</td><td>둘 주변으로 색이 번진다. 간판·차양·화분·기와.</td><td>지우가 “봤어? 무지개색!”이라고 한다.</td></tr>
+    <tr><td>75–100</td><td>동네 전체. 잉크선은 남고 색이 찬다.</td><td>도착하면 비가 그친다.</td></tr>
   </table></div>
-  <p><b>오르는 것:</b> 연석에서 멈추기 · 장애물을 둘의 폭으로 돌아가기 · 사람 걸음에 맞추기 · 차가 오면 “앞으로”를 거부하기. <b>떨어지는 것:</b> 부딪히게 하기 · 앞서 나가기 · 냄새에 끌려가기 · 차 앞으로 들어가기.</p>
-  <p class="dim">기술: 색 회복은 셰이더가 월드 공간에서 개까지의 픽셀 거리로 계산한다. 재질을 공유해도, 카메라가 둘이어도 같은 곳에 색이 있다.</p>
+  <p><b>오르는 것:</b> 나란히 첨벙 +5 · 첨벙 +1.5 · 색 방울 +3.5 · 횡단보도 건너기 +3 · 부르자 오기 +2. <b>떨어지는 것:</b> 차에 놀라기 −8.</p>
+  <p class="dim">기술: 색 회복은 셰이더가 월드 공간에서 둘 사이 중점까지의 픽셀 거리로 계산한다. 재질을 공유해도, 카메라가 둘이어도 같은 곳에 색이 있다.</p>
 
-  <h2>미션 — 실태에서 가져왔다</h2>
-  <p>지어낸 장애물이 없습니다. 항목마다 게임 안 자막에 붙는 사실과 출처입니다.</p>
+  <h2>길에서 노는 법</h2>
   <div class="tw"><table>
-    <tr><th>미션</th><th>게임에서</th><th>사실</th></tr>
-    <tr><td>볼라드</td><td>사람만 부딪힌다. 둘의 폭으로 돌아가야 한다.</td><td>볼라드 부적정 설치 96% — <a href="https://theindigo.co.kr/archives/53850">더인디고, 장애인등편의법 18년</a> · <a href="https://www.daejonilbo.com/news/articleView.html?idxno=2043091">대전일보 “시각장애인의 지뢰”</a></td></tr>
-    <tr><td>점자블록 위 킥보드</td><td>첫 10초. 발이 걸리며 “지우는 보지 못한다”가 드러난다.</td><td>점자블록 적정 설치율 4%, 미설치 18.7% — <a href="https://theindigo.co.kr/archives/53850">더인디고</a> · <a href="https://www.khan.co.kr/article/202109121145001">경향신문, 점자블록 위 킥보드</a></td></tr>
-    <tr><td>낮은 간판</td><td>개는 지나가고 사람은 머리를 부딪힌다.</td><td>안내견은 자기 키의 두 배를 상상하도록 훈련받는다(underpass training) — <a href="https://israelguidedog.org/2025/11/what-is-intelligent-disobedience-a-guide-dogs-most-important-skill/">Israel Guide Dogs</a></td></tr>
-    <tr><td>음향신호기 없는 횡단보도</td><td>연석에서 멈춰야 지우의 발이 연석을 찾는다. 차는 파도로 온다.</td><td>신호등 횡단보도 중 음향신호기 설치 34% — <a href="https://theindigo.co.kr/archives/25212">더인디고(최혜영 의원실)</a> · 미설치 45.3% — <a href="https://theindigo.co.kr/archives/53850">더인디고</a></td></tr>
-    <tr><td>“앞으로” 거부</td><td>명령이 들려도 차가 오면 버틴다. 차가 지나가면 신뢰가 크게 오른다.</td><td>지적 불복종 — <a href="https://dogsinc.org/blog/guide-dogs/intelligent-disobedience-in-guide-dogs-how-guide-dogs-learn-to-prioritize-safety/">Dogs Inc.</a> · <a href="https://www.whole-dog-journal.com/behavior/intelligent-disobedience/">Whole Dog Journal</a></td></tr>
-    <tr><td>공사 펜스 · 불법 주차</td><td>점자블록이 끊긴다. 직사각형 충돌 — 개의 폭이 아니라 둘의 폭.</td><td><a href="https://www.jjan.kr/article/20220227580031">전북일보, 배려 없는 보행로</a></td></tr>
-    <tr><td>지하철 <span class="dim">(다음)</span></td><td>승강장 끝에서 멈추기, 환승 통로 찾기.</td><td>승강장 추락 위험, 환승 안내 부재 — <a href="https://www.kca.go.kr/smartconsumer/board/download.do?menukey=7301&fno=10023045&bid=00000146&did=1002756270">한국소비자원 실태조사</a></td></tr>
-    <tr><td>버스 <span class="dim">(다음)</span></td><td>동시에 온 세 대 중 내 번호. 점자 없는 하차벨.</td><td><a href="https://www.ablenews.co.kr/news/articleView.html?idxno=218268">에이블뉴스, 전맹이 버스 타기 힘든 이유</a></td></tr>
-    <tr><td>식당 문 앞 <span class="dim">(다음)</span></td><td>“개는 안 돼요.” 지우가 설명하는 동안 앉아서 기다린다.</td><td>장애인복지법 40조, 과태료 300만 원 이하 — <a href="https://theindigo.co.kr/archives/57129">더인디고</a> · <a href="https://www.ytn.co.kr/_ln/0103_202501161542284081">YTN 2025</a></td></tr>
+    <tr><th>것</th><th>게임에서</th><th>규칙</th></tr>
+    <tr><td>웅덩이 <code>w</code></td><td>걸어 지나면 0.65배 느려진다. 뛰어들면 첨벙. 둘이 1.5초 안에 나란히 첨벙하면 큰 첨벙.</td><td>타일 하나. 착지 판정은 타일 중심 기준.</td></tr>
+    <tr><td>상자 <code>o</code></td><td>길을 가로막는 0.6m 띠. 땅에선 못 지나고 공중(z &gt; 0.1)에선 지난다. 모서리에 내려앉으면 앞으로 폴짝.</td><td>좌우가 트인 길이면 x로 얇고, 아니면 y로 얇다.</td></tr>
+    <tr><td>색 방울</td><td>동네에 12개. 웅덩이 옆을 좋아한다. 둘 중 누구든 닿으면 줍는다.</td><td>결산에 “색 방울 n/12”.</td></tr>
+    <tr><td>횡단보도 <code>+</code></td><td>둘 중 하나가 횡단보도(또는 그 앞 0.9m)에 있으면 차가 3m 앞에 선다.</td><td>차는 8초 흐르고 11초 쉰다. 마을버스는 24–34초마다.</td></tr>
+    <tr><td>차도 <code>=</code></td><td>횡단보도 밖에서 들어가면 달리는 차에 놀라 마지막 인도 자리로 돌아간다.</td><td>1초 정지, 마음 −8.</td></tr>
+    <tr><td>냄새</td><td>강아지가 1.8m 안의 냄새에 끌려 잠깐 멈춘다. 지우가 3m 밖이면 안 끌린다.</td><td>부르면 바로 온다(+2).</td></tr>
+    <tr><td>멀어짐</td><td>7m 넘으면 “지우 어디 갔어?”. 4초 넘게 멀면 자취 위로 데려온다.</td><td>끼임 안전장치.</td></tr>
+    <tr><td>도착 <code>D</code></td><td>지우가 1.3m 안, 강아지가 3.5m 안. 비가 그치고 결산.</td><td>가게 앞. 부산은 동삼 편의점, 전주는 풍남 국밥.</td></tr>
   </table></div>
 
-  <h2>안내견이 배우는 것 — 그대로 조작이 된다</h2>
+  <h2>점프</h2>
   <ul>
-    <li><b>연석마다 멈춘다.</b> 뛰어내릴 수 있어도 멈춘다. → 버튼(B/스페이스) 또는 스틱을 놓고 0.6초.</li>
-    <li><b>둘의 폭으로 지나간다.</b> 자기 몸의 두 배를 상상한다. → 장애물 충돌 반경이 사람 기준.</li>
-    <li><b>일할 때 딴짓하지 않는다.</b> 낯선 사람이 불러도, 먹을 걸 줘도. → 트리거 = 집중. 놓으면 냄새에 끌린다.</li>
-    <li><b>지적 불복종.</b> “앞으로”가 들려도 차가 오면 안 간다. → 명령 자막이 뜬 뒤 1초 이상 버티면 사건이 된다.</li>
-    <li><b>짖지 않는다.</b> 게임 안에서 개는 소리를 내지 않는다. 말은 지우가 한다 — 앞으로, 기다려, 잘했어, 고마워, 천천히, 지금은 안 돼, 아야, 괜찮아 가자.</li>
+    <li><b>물리.</b> 초속 4.8m, 중력 15 — 최고 0.77m, 체공 0.64초, 달리면 1.4m를 난다. 공중에선 방향을 조금만 튼다.</li>
+    <li><b>강아지도 뛴다.</b> 지우가 뛴 자리를 표시해 두고, 강아지가 그 자리(0.45m)에 오면 같은 힘의 95%로 뛴다.</li>
+    <li><b>연출.</b> 그림만 뜨고 그림자는 땅에 남는다. 웅덩이 착지엔 링 셋과 방울 여덟, 색 방울엔 여섯 색 반짝.</li>
   </ul>
-  <p class="dim">훈련 약 2년, 활동 7–8년, 파트너 교육 4주(학교 2주 + 현지 2주) — <a href="https://www.guidedog.co.kr/kor/social/guideLife.do">삼성화재안내견학교</a>.</p>
 
-  <h2>개들 — 성격이 손맛이다</h2>
+  <h2>강아지들 — 성격이 손맛이다</h2>
   <div class="tw"><table>
-    <tr><th>개</th><th>손맛</th><th>이야기</th></tr>
-    <tr><td>보리 · 래브라도 1살</td><td>빠르다. 냄새·고양이에 잘 끌린다. 집중을 잡아 줘야 한다.</td><td>첫 파트너. 먹색 귀 하나. 냄새를 맡으면 그 귀가 선다.</td></tr>
-    <tr><td>은아 · 래브라도 7살</td><td>느리지만 멈출 곳에서 멈춘다. 오래 걸으면 쉰다.</td><td>베테랑. 은퇴가 가깝다. 마지막 파트너가 지우다. 양쪽 귀 크림, 주둥이가 하얗게 셌다.</td></tr>
-    <tr><td>바다 · 골든 리트리버 3살</td><td>힘이 좋다. 앞서 나가면 하네스가 당겨진다.</td><td>사람 걸음에 맞추는 법을 배우는 중. 황금빛에 큰 꼬리.</td></tr>
+    <tr><th>강아지</th><th>손맛</th><th>이야기</th></tr>
+    <tr><td>보리 · 1살</td><td>빠르다. 냄새·고양이에 잘 끌린다.</td><td>첫 친구. 먹색 귀 하나. 웅덩이를 보면 먼저 뛰어든다.</td></tr>
+    <tr><td>은아 · 7살</td><td>느긋하다. 상자 앞에서 한 번 멈칫한다.</td><td>모자를 눌러 쓰고 천천히 따라온다. 양쪽 귀 크림, 주둥이가 하얗게 셌다.</td></tr>
+    <tr><td>바다 · 3살</td><td>힘이 좋다. 앞질러 뛴다.</td><td>색 방울을 먼저 줍는다. 황금빛에 큰 꼬리.</td></tr>
   </table></div>
 
   <h2>세 개의 눈</h2>
   <ul>
-    <li><b>강아지 시점</b> — 꼬리 뒤, 개의 눈높이. 냄새 선과 앞 5m의 장애물 표시. 산책은 여기서 한다.</li>
-    <li><b>작가 시점</b> — 그림책처럼 옆에서. 플랫·전경으로 당겨 볼 수 있다. iPhone은 이것 하나(2D).</li>
-    <li><b>사람 시점</b> — 지우의 자리. 신뢰만큼만 색이 있고 나머지는 종이. 소리와 햅틱이 채운다. <span class="dim">(계획: 같은 엔진으로 VoiceOver 모드)</span></li>
+    <li><b>강아지 시점</b> — 꼬리 뒤, 강아지의 눈높이. 냄새 선이 보인다.</li>
+    <li><b>작가 시점</b> — 45°로 내려다본 골목. 카메라와 둘 사이를 가리는 건물은 지붕째 사라졌다가 0.4초 뒤 돌아온다. iPhone은 이것 하나(2D).</li>
+    <li><b>사람 시점</b> — 지우의 자리. 마음만큼만 색이 있고 나머지는 종이.</li>
   </ul>
   <p>Mac은 기본으로 <b>두 시점을 나란히</b> 봅니다 — 왼쪽 작가, 오른쪽 강아지. V(또는 X 버튼)로 하나로 합칩니다. 장면은 하나, 카메라가 둘입니다.</p>
 
-  <h2>동네 — 배경이다</h2>
-  <p>동네는 하늘색·건물·냄새·장애물 배치를 바꿉니다. 미션은 어디서나 같습니다. 부산 영도, 전주 한옥마을. 위치를 허락하면 가장 가까운 동네, 안 해도 됩니다. 셋째 동네부터는 데이터 항목 하나입니다.</p>
+  <h2>동네 — 타일 지도 한 장</h2>
+  <p>2m 타일, 40×12. <code>#</code> 건물 <code>.</code> 인도 <code>=</code> 차도 <code>+</code> 횡단보도 <code>~</code> 바다 <code>w</code> 웅덩이 <code>o</code> 상자 <code>S</code> 출발 <code>D</code> 목적지. 건물 줄마다 가게가 붙는다 — 문·창·간판(글자 텍스처)·차양·화분·실외기·물탱크. 행인 넷(할머니·학생), 마을버스, 갈매기, 고양이가 산다. 부산 영도, 전주 한옥마을. 셋째 동네부터는 지도 한 장과 가게 이름 열 개로 늘린다.</p>
 
-  <h2>변수 — 날씨</h2>
-  <p>비: 지우는 한 손에 우산. 빗소리에 차 소리가 묻힌다 — 더 일찍 멈춰야 한다. 눈·바람은 어셋만 있고 다음 차례.</p>
+  <h2>날씨</h2>
+  <p>모험은 비로 시작해 도착하면 갠다. 우비 둘, 우산 없음. 빗소리 위에 첨벙 소리가 얹힌다.</p>
 
-  <h2>스토리 — 4주</h2>
+  <h2>스토리 — 비 오는 날들</h2>
   <ul>
-    <li><b>1주 학교.</b> 하네스, 연석, 멈춤. 지우를 처음 만난다. 세상은 흑백이다.</li>
-    <li><b>2주 학교 밖 골목.</b> 볼라드와 킥보드. 처음으로 지우가 부딪힌다. 처음으로 색이 든다.</li>
-    <li><b>3주 지우의 동네.</b> 음향신호기 없는 횡단보도. 비. “앞으로”를 거부하는 날.</li>
-    <li><b>4주 출근길.</b> 지하철, 버스, 그리고 문 앞에서 “개는 안 돼요”.</li>
+    <li><b>첫날 편의점까지.</b> 우비를 입고 나선다. 첫 웅덩이, 첫 상자, 첫 첨벙. 세상은 흑백이다.</li>
+    <li><b>둘째 정류장까지.</b> 마을버스가 물을 튀긴다. 강아지가 고양이를 따라간다. 처음으로 나란히 첨벙.</li>
+    <li><b>셋째 병원까지.</b> 큰길을 두 번 건넌다. 횡단보도에서 차가 기다려 준다.</li>
+    <li><b>넷째 카페까지.</b> 색 방울 열두 개를 다 줍는 날. 도착하면 비가 그치고 무지개.</li>
   </ul>
-
-  <h2>거기서부터 — 엔드게임</h2>
-  <p>첫 출근을 함께 합니다. 그날 골목은 색으로 차 있습니다. 그 뒤로는 <b>매일의 산책</b> — 동네와 개를 바꾸고, 신뢰는 개마다 남습니다. 은아의 은퇴 산책이 마지막 이야기입니다.</p>
 
   <h2>왜 Apple인가</h2>
   <ul>
-    <li><b>Inclusivity</b> — ADA 부문. 안내견의 눈을 빌리는 게임이 정작 시각장애인에게 닫혀 있으면 안 된다. 사람 시점 = VoiceOver·햅틱·소리만으로 플레이 가능한 모드, 같은 엔진.</li>
-    <li><b>DualSense 적응형 트리거 · Core Haptics</b> — 하네스가 당겨지는 감각, 연석의 턱, 차가 지나가는 진동.</li>
-    <li><b>SceneKit + Metal 셰이더</b> — 3D를 2.5D 잉크로. 월드 공간 색 회복, 옆면에만 톤, 반전 헐 외곽선. 카메라 둘을 한 장면에.</li>
-    <li><b>iCloud 키-값 저장소</b> — Mac에서 걷던 신뢰가 iPhone에 그대로.</li>
-    <li><b>온디바이스 Foundation Models</b> — 지우의 세 줄 일기, 동네별 사건 문장. 서버 0.</li>
+    <li><b>Delight &amp; Fun</b> — ADA 부문. 점프 하나로 웅덩이·상자·강아지가 다 반응한다. 첨벙에 햅틱, 색 방울에 소리.</li>
+    <li><b>Core Haptics · DualSense</b> — 점프 톡, 첨벙 둔탁, 차에 놀랄 때 크게.</li>
+    <li><b>SceneKit + Metal 셰이더</b> — 3D를 2.5D 잉크로. 월드 공간 색 회복, 옆면에만 톤, 반전 헐 외곽선. 카메라 둘을 한 장면에. 종이 인형(빌보드 스프라이트)이 2D와 같은 그림.</li>
+    <li><b>iCloud 키-값 저장소</b> — Mac에서 쌓은 마음이 iPhone에 그대로.</li>
   </ul>
 
   <h2>잉크 규칙 — 앱과 웹이 같은 상수를 쓴다</h2>
-  <p>벤치마크: <b>Miffy</b>(점 두 개와 십자 하나, 감정은 머리 기울기), <b>TOEM</b>(흑백·손그림, 디테일을 늘렸다가 결국 최소로 되돌림), 만화 스크린톤의 원칙(톤은 그늘과 큰 면에만, 초점 부위에서는 지운다). 선례: Chicory·Okami·Gris는 <i>칠해서</i> 색이 돌아오고, 우리는 <i>관계로</i> 돌아온다.</p>
+  <p>벤치마크: <b>Miffy</b>(점 두 개와 십자 하나, 감정은 머리 기울기), <b>TOEM</b>(흑백·손그림), 만화 스크린톤의 원칙(톤은 그늘과 큰 면에만).</p>
   <div class="tw"><table>
     <tr><th>항목</th><th>규칙</th><th>상수</th></tr>
-    <tr><td>값</td><td>종이 · 회색 <b>한 톤</b> · 먹. 그라데이션 없음. 악센트는 붉은 줄 하나. 색은 합으로만 돌아온다.</td><td><code>paper #FAFAF7 · grey #C9C9C4 · ink #111 · leash #E8562D</code></td></tr>
-    <tr><td>선</td><td>캐릭터 외곽 <b>4.5</b>(스티커 굵기), 배경 외곽 2, 내부 1.5. 둥근 끝. 손떨림 없음 — 굵고 깨끗한 선이 작게 봐도 읽힌다.</td><td><code>lineChar 4.5 · lineBg 2 · lineIn 1.5</code></td></tr>
+    <tr><td>값</td><td>종이 · 회색 <b>한 톤</b> · 먹. 그라데이션 없음. 악센트는 노란 우비. 색은 마음으로만 번진다.</td><td><code>paper #FAFAF7 · grey #C9C9C4 · ink #111 · raincoat #F2C94C</code></td></tr>
+    <tr><td>선</td><td>캐릭터 외곽 <b>4.5</b>(스티커 굵기), 배경 외곽 2, 내부 1.5. 둥근 끝. 손떨림 없음.</td><td><code>lineChar 4.5 · lineBg 2 · lineIn 1.5</code></td></tr>
     <tr><td>캐릭터</td><td>머리:몸 = <b>1:1</b>. 점 눈. 입 없음(개는 코 점 하나). 짧고 뭉툭한 다리. 실루엣만으로 읽혀야 한다.</td><td><code>headRatio 1.0 · eye 0.12·size</code></td></tr>
-    <tr><td>볼륨</td><td>그늘진 쪽에 회색 <b>납작한 면</b> 하나. 바닥에 납작한 타원 그림자 하나.</td><td><code>shadeSide right-bottom</code></td></tr>
+    <tr><td>볼륨</td><td>그늘진 쪽에 회색 <b>납작한 면</b> 하나. 바닥에 납작한 타원 그림자 하나. 점프해도 그림자는 땅에.</td><td><code>shadeSide right-bottom</code></td></tr>
     <tr><td>톤</td><td>스크린톤은 <b>건물 옆면·처마 밑·원경</b>에만. <b>캐릭터·소품·얼굴에는 절대 금지.</b></td><td><code>tone 6px · r 1.15</code></td></tr>
-    <tr><td>움직임</td><td>스쿼시 작게. 감정은 꼬리·귀·머리 기울기로. 당겨지면 몸이 뒤로 기운다.</td><td><code>tilt ≤ 12°</code></td></tr>
-    <tr><td>첫 10초</td><td>개가 즉시 무언가에 끌린다 → 줄이 당긴다(손에 온다) → 풀어주면 냄새 맡는다 → <b>색이 처음 번진다</b>. 설명 없이 규칙 셋을 손으로 배운다.</td><td>—</td></tr>
+    <tr><td>첫 10초</td><td>우비 둘이 나선다 → 4m 앞 웅덩이 → 뛰어들면 첨벙 → 강아지가 따라 첨벙 → <b>색이 처음 번진다</b>. 설명 없이 점프와 색을 손으로 배운다.</td><td>—</td></tr>
   </table></div>
-  <p class="dim">웹의 <code>INK</code> 객체와 앱의 <code>Ink.swift</code>가 같은 숫자를 갖는다. 어느 한쪽을 바꾸면 다른 쪽도 바꾼다.</p>
 
   <h2>제작</h2>
   <ul>
-    <li><b>구조</b> — 시뮬레이션 하나(<code>WalkSim</code>, 미터 단위) → 사건(<code>WalkEvent</code>) → 소리·햅틱·자막. 렌더러 둘(SpriteKit 2D 100px/m, SceneKit 3D)은 상태만 그린다. 헤드리스로 90초 자동 걷기를 돌려 사건 순서를 검증한다.</li>
-    <li><b>어셋</b> — 손 스케치 → GPT Image 2.5 시트 → Scenario 커스텀 모델 → Recraft 벡터화 → Meshy 3D + 우리 잉크 셰이더. 린트(팔레트·톤·여백·이름)가 규칙을 강제한다.</li>
-    <li><b>소리</b> — 효과음 18 · 음악 3 · 지우 목소리 8(ElevenLabs). 개는 짖지 않는다.</li>
-    <li><b>순서</b> — ① 하네스 손맛(완료) → ② 신뢰와 색(완료) → ③ 인도 장애물 5종 + 횡단보도(완료) → ④ 지하철·버스·식당 문 → ⑤ 4주 스토리 → ⑥ 사람 시점 = VoiceOver 모드 → ⑦ 지우의 일기.</li>
+    <li><b>구조</b> — 시뮬레이션 하나(<code>WalkSim</code>, 미터 단위, 지우·강아지 몸 둘) → 사건(<code>WalkEvent</code>) → 소리·햅틱·자막·연출. 렌더러 둘(SpriteKit 2D 48px/m, SceneKit 3D)은 상태만 그린다. 헤드리스로 오토파일럿 도착을 검증한다.</li>
+    <li><b>어셋</b> — GPT Image 시트(참조 이미지로 결 고정) → <code>tools/slice_sheet.py</code>로 프레임 슬라이스(컬러/흑백 두 판). 우비 시트: 지우 걷기 8 + 포즈 5, 강아지 셋 걷기 8 + 포즈 6, 행인 둘.</li>
+    <li><b>소리</b> — 효과음 18 · 음악 3 · 지우 목소리 8(ElevenLabs). 강아지는 짖지 않는다. 첨벙은 <code>puddle_splash</code>.</li>
+    <li><b>순서</b> — ① 타일 동네·가게·행인(완료) → ② 점프·웅덩이·상자·색 방울·따라오는 강아지(완료) → ③ 착지 먼지·강아지 털기·상자 위 서기 → ④ 목적지 넷 → ⑤ 셋째 동네.</li>
   </ul>
 
   <h2>이름</h2>
   <div class="names">
-    <div class="name pick"><b>끌림</b><span class="en">Drawn</span><span>줄에 끌리고, 개에게 끌린다. 영어 Drawn은 세 겹 — 당겨진, 이끌린, 그리고 <b>그려진</b>. 잉크 카툰 게임에 이보다 맞는 단어가 없다.</span></div>
-    <div class="name"><b>물들다</b><span class="en">Tinge</span><span>세상에 색이 물들고, 서로에게 물든다. 색 회복 메커닉을 이름으로.</span></div>
-    <div class="name"><b>남의 개</b><span class="en">Someone Else's Dog</span><span>정직하고 웃기고 기억에 남는다. 정서는 덜 깊다.</span></div>
-    <div class="name"><b>발맞춤</b><span class="en">In Step</span><span>합(合)을 우리말로. 걸음이 맞는 순간.</span></div>
+    <div class="name pick"><b>끌림</b><span class="en">Drawn</span><span>강아지에게 끌리고, 웅덩이에 끌린다. 영어 Drawn은 세 겹 — 당겨진, 이끌린, 그리고 <b>그려진</b>. 잉크 카툰 게임에 이보다 맞는 단어가 없다.</span></div>
+    <div class="name"><b>물들다</b><span class="en">Tinge</span><span>세상에 색이 물들고, 서로에게 물든다.</span></div>
+    <div class="name"><b>첨벙</b><span class="en">Splash</span><span>정직하고 웃기다. 정서는 덜 깊다.</span></div>
+    <div class="name"><b>발맞춤</b><span class="en">In Step</span><span>걸음이 맞는 순간.</span></div>
   </div>
   <p style="margin-top:16px"><b>《끌림 / Drawn》로 확정.</b> 한 단어에 게임의 물리와 감정이 다 들어 있고, 영어 제목이 아트 스타일까지 설명합니다.</p>
 </div>
